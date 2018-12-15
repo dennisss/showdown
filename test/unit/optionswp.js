@@ -1,9 +1,8 @@
 /* jshint ignore:start */
 var fs = require('fs'),
-    filedata;
-filedata = fs.readFileSync('src/options.js', 'utf8');
-eval(filedata);
+    options = require('../../dist/options');
+
 module.exports = {
-  getDefaultOpts: getDefaultOpts
+  getDefaultOpts: options.getDefaultOpts
 };
 /* jshint ignore:end */

@@ -1,7 +1,7 @@
 require('source-map-support').install();
 require('chai').should();
 var expect = require('chai').expect,
-    showdown = require('../../.build/showdown.js');
+    showdown = require('../..').default;
 
 describe('showdown.options', function () {
   'use strict';

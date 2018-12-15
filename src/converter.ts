@@ -130,7 +130,7 @@ export class Converter {
       if (privateGlobals.extensions[ext]) {
         console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
           'Please inform the developer that the extension should be updated!');
-        legacyExtensionLoading(showdown.extensions[ext], ext);
+        this.legacyExtensionLoading(showdown.extensions[ext], ext);
         return;
       // END LEGACY SUPPORT CODE
 
