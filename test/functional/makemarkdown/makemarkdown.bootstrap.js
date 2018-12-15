@@ -67,7 +67,7 @@
     getTestSuite: getTestSuite,
     assertion: assertion,
     normalize: normalize,
-    showdown: require('../../..').default
+    showdown: require('../../../.build').default
   };
 })();
 

@@ -16,8 +16,6 @@ else {
 	doc = document;
 }
 
-export { doc as document };
-
 export default {
 	Converter,
 	helper: {
@@ -25,4 +23,4 @@ export default {
 		...helpers
 	},
 	...showdown
-};
+}

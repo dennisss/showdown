@@ -5,7 +5,7 @@
 /*jshint -W053 */
 /*jshint -W010 */
 /*jshint -W009 */
-var showdown = require('../..').default;
+var showdown = require('../../.build').default;
 
 describe('encodeEmailAddress()', function () {
   'use strict';

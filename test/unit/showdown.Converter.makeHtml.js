@@ -8,7 +8,7 @@ describe('showdown.Converter', function () {
   require('source-map-support').install();
   require('chai').should();
 
-  var showdown = require('../..').default;
+  var showdown = require('../../.build').default;
 
   /*
   describe.skip('Converter.options extensions', function () {

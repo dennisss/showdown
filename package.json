@@ -31,7 +31,7 @@
     "web": "https://github.com/showdownjs/showdown"
   },
   "license": "BSD-3-Clause",
-  "main": "./dist/index.js",
+  "main": "./dist/showdown.js",
   "scripts": {
     "test": "grunt test"
   },
@@ -39,16 +39,16 @@
     "showdown": "bin/showdown.js"
   },
   "devDependencies": {
+    "@types/node": "^10.12.15",
     "chai": "4.1.x",
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "1.1.x",
-    "grunt-contrib-concat": "1.0.x",
     "grunt-contrib-jshint": "1.1.x",
-    "grunt-contrib-uglify": "~3.3.0",
     "grunt-conventional-changelog": "6.1.x",
     "grunt-conventional-github-releaser": "1.0.x",
     "grunt-endline": "0.6.x",
     "grunt-eslint": "19.0.x",
+    "grunt-shell": "^2.1.0",
     "grunt-simple-mocha": "0.4.x",
     "load-grunt-tasks": "3.5.x",
     "performance-now": "2.0.x",
@@ -57,10 +57,12 @@
     "semver-sort": "0.0.x",
     "sinon": "^5.1.1",
     "source-map-support": "^0.5.9",
-    "typescript": "^3.2.2"
+    "ts-loader": "^5.3.1",
+    "typescript": "^3.2.2",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "@types/node": "^10.12.15",
     "jsdom": "^11.0.0",
     "tslib": "^1.9.3",
     "yargs": "^12.0.2"

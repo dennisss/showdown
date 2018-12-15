@@ -3,7 +3,7 @@
  */
 'use strict';
 var fs = require('fs'),
-    showdown = require('../..').default,
+    showdown = require('../../.build').default,
     converter = new showdown.Converter(),
     pkg = require('../../package.json'),
     performance = require('./lib/performance.lib.js');
