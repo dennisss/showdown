@@ -1,19 +1,21 @@
-import { ShowdownOptions } from './types';
+import { ShowdownOptions, Optional } from './types';
 
 /**
  * Created by Tivie on 13-07-2015.
  */
 
-export interface ShowdownOptionDef {
-  defaultValue: boolean;
+export interface ShowdownOptionDef<K extends keyof ShowdownOptions> {
+  defaultValue: ShowdownOptions[K];
   description: string;
   type: string;
 }
 
-export type ShowdownOptionDefs = { [K in keyof ShowdownOptions] : ShowdownOptionDef };
+
+export type ShowdownOptionDefs = { [K in keyof ShowdownOptions]-? : ShowdownOptionDef<K> };
 
 export function getDefaultOpts (simple: false): ShowdownOptionDefs;
 export function getDefaultOpts (simple: true): ShowdownOptions;
+export function getDefaultOpts (simple: boolean): any;
 export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOptionDefs {
   'use strict';
 
@@ -49,7 +51,7 @@ export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOption
       type: 'boolean'
     },
     headerLevelStart: {
-      defaultValue: false,
+      defaultValue: 1,
       description: 'The header blocks level start',
       type: 'integer'
     },
@@ -68,11 +70,6 @@ export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOption
       description: 'Parse midword underscores as literal underscores',
       type: 'boolean'
     },
-    literalMidWordAsterisks: {
-      defaultValue: false,
-      description: 'Parse midword asterisks as literal asterisks',
-      type: 'boolean'
-    },
     strikethrough: {
       defaultValue: false,
       description: 'Turn on/off strikethrough support',
@@ -86,6 +83,11 @@ export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOption
     tablesHeaderId: {
       defaultValue: false,
       description: 'Add an id to table headers',
+      type: 'boolean'
+    },
+    tableHeaderId: {
+      defaultValue: false,
+      description: 'DEPRECATED: Use tablesHeaderId',
       type: 'boolean'
     },
     ghCodeBlocks: {
@@ -172,28 +174,36 @@ export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOption
       defaultValue: false,
       description: 'Split adjacent blockquote blocks',
       type: 'boolean'
+    },
+    customizedHeaderId: {
+      defaultValue: false,
+      description: 'DEPRECATED',
+      type: 'boolean'
     }
   };
   if (simple === false) {
     return JSON.parse(JSON.stringify(defaultOptions));
   }
-  var ret: ShowdownOptions = {};
+
+  var ret: Optional<ShowdownOptions> = {};
   for (var opt in defaultOptions) {
     if (defaultOptions.hasOwnProperty(opt)) {
-      ret[opt as keyof ShowdownOptions] = defaultOptions[opt].defaultValue;
+      let k = opt as keyof ShowdownOptions;
+      ret[k] = defaultOptions[k].defaultValue;
     }
   }
-  return ret;
+
+  return ret as ShowdownOptions;
 }
 
 export function allOptionsOn (): ShowdownOptions {
   'use strict';
-  var options = getDefaultOpts(true),
-      ret: ShowdownOptions = {};
+  var options = getDefaultOpts(true);
+
   for (var opt in options) {
-    if (options.hasOwnProperty(opt)) {
-      ret[opt as keyof ShowdownOptions] = true;
+    if (options.hasOwnProperty(opt) && typeof(opt) === 'boolean') {
+      options[opt as keyof ShowdownOptions] = true;
     }
   }
-  return ret;
+  return options;
 }

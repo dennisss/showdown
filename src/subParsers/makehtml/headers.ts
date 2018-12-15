@@ -16,7 +16,7 @@ export function makehtml_headers (text: string, options: ConverterOptions, globa
 
   text = globals.converter._dispatch('makehtml.headers.before', text, options, globals).getText();
 
-  var headerLevelStart = (isNaN(niceParseInt(options.headerLevelStart))) ? 1 : niceParseInt(options.headerLevelStart),
+  var headerLevelStart = options.headerLevelStart,
 
   // Set text-style headers:
   //	Header 1

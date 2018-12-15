@@ -1,6 +1,6 @@
 import { getDefaultOpts, allOptionsOn } from './options';
 import { isString, stdExtName, isUndefined, isArray } from './helpers';
-import { ShowdownExtension, ShowdownOptions } from './types';
+import { ShowdownExtension, ShowdownOptions, Optional } from './types';
 
 /**
  * Created by Tivie on 06-01-2015.
@@ -8,10 +8,10 @@ import { ShowdownExtension, ShowdownOptions } from './types';
 
 // Private properties
 export const privateGlobals: {
-  extensions: { [name: string]: ShowdownExtension; };
+  extensions: { [name: string]: ShowdownExtension[]; };
   globalOptions: ShowdownOptions;
   setFlavor: string;
-  flavor: { [name: string]: ShowdownOptions };
+  flavor: { [name: string]: Optional<ShowdownOptions> };
 } = {
   extensions: {},
   globalOptions: getDefaultOpts(true),
@@ -124,11 +124,11 @@ export const showdown = {
     this.resetOptions();
     var preset = privateGlobals.flavor[name];
     privateGlobals.setFlavor = name;
-    for (var option in preset) {
-      if (preset.hasOwnProperty(option)) {
-        privateGlobals.globalOptions[option] = preset[option];
-      }
-    }
+
+    privateGlobals.globalOptions = {
+      ...privateGlobals.globalOptions,
+      ...preset
+    };
   },
 
  /**
@@ -169,7 +169,7 @@ export const showdown = {
    * @param {object|function=} ext
    * @returns {*}
    */
-  extension: function (name: string, ext) {
+  extension: function (name: string, ext?: (() => ShowdownExtension)|ShowdownExtension|ShowdownExtension[]) {
     'use strict';
 
     if (!isString(name)) {

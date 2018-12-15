@@ -75,9 +75,8 @@ export function forEach<T extends Array<any>|object> (obj: T, callback: (val: an
     throw new Error('callback param must be a function/closure');
   }
 
-  if (typeof obj.forEach === 'function') {
-    obj.forEach(callback);
-  } else if (isArray(obj)) {
+  if (isArray(obj)) {
+    // TODO: Use the native implementation in ES5
     for (var i = 0; i < obj.length; i++) {
       callback(obj[i], i, obj);
     }
@@ -173,7 +172,7 @@ function rgxFindMatchPos (str: string, left: string, right: string, flags?: stri
         }
       }
     }
-  } while (t && (x.lastIndex = s));
+  } while (t && (s !== undefined? (x.lastIndex = s) : false));
 
   return pos;
 };
@@ -406,7 +405,6 @@ export interface EventMatches {
 export interface EventParams {
   regexp?: RegExp;
   matches?: EventMatches;
-  parsedText?: string;
   converter?: Converter;
   globals?: ConverterGlobals;
   options?: ConverterOptions;
@@ -444,8 +442,6 @@ export class Event {
   }
 
   private _stopExecution = false;
-
-  private parsedText: string = this.params.parsedText || null;
 
   getRegexp() {
     return this.regexp;

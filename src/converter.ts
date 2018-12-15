@@ -11,7 +11,7 @@ import { makehtml_blockGamut } from "./subParsers/makehtml/blockGamut";
 import { makehtml_unhashHTMLSpans } from "./subParsers/makehtml/hashHTMLSpans";
 import { makehtml_unescapeSpecialChars } from "./subParsers/makehtml/unescapeSpecialChars";
 import { makehtml_completeHTMLDocument } from "./subParsers/makehtml/completeHTMLDocument";
-import { ConverterOptions, ShowdownOptions, ShowdownExtension, ConverterGlobals } from './types';
+import { ConverterOptions, ShowdownOptions, ShowdownExtension, ConverterGlobals, Optional } from './types';
 import { makeMarkdown_node } from './subParsers/makemarkdown/node';
 import { privateGlobals, validate, showdown } from './showdown';
 import { isText } from './node_helpers';
@@ -22,7 +22,7 @@ import { isText } from './node_helpers';
 
 
 function rTrimInputText (text: string) {
-  var rsp = text.match(/^\s*/)[0].length,
+  var rsp = text.match(/^\s*/)![0].length,
       rgx = new RegExp('^\\s{0,' + rsp + '}', 'gm');
   return text.replace(rgx, '');
 }
@@ -43,7 +43,7 @@ export class Converter {
    * @private
    * @type {{}}
    */
-  private options: ConverterOptions = {};
+  private options: ConverterOptions;
 
   /**
    * Language extensions used by this converter
@@ -85,30 +85,24 @@ export class Converter {
    * Converter constructor
    * @private
    */
-  constructor (private converterOptions: ConverterOptions = {}) {
-
-    for (var gOpt in privateGlobals.globalOptions) {
-      if (privateGlobals.globalOptions.hasOwnProperty(gOpt)) {
-        let k = gOpt as keyof ShowdownOptions;
-        this.options[k] = privateGlobals.globalOptions[k];
-      }
-    }
-
-    // Merge options
-    if (typeof converterOptions === 'object') {
-      for (var opt in converterOptions) {
-        if (converterOptions.hasOwnProperty(opt)) {
-          let k = opt as keyof ConverterOptions;
-          this.options[k] = converterOptions[k];
-        }
-      }
-    } else {
+  constructor (converterOptions: Optional<ConverterOptions> = {}) {
+    if (typeof converterOptions !== 'object') {
       throw Error('Converter expects the passed parameter to be an object, but ' + typeof converterOptions +
       ' was passed instead.');
     }
 
+    // Initialize with copy of global options merged with 
+    this.options = {
+      ...privateGlobals.globalOptions,
+      ...converterOptions
+    };
+
     if (this.options.extensions) {
-      forEach(this.options.extensions, (ext, name) => this._parseExtension(ext, name));
+      if(!isArray(this.options.extensions)) {
+        this.options.extensions = [this.options.extensions];
+      }
+
+      forEach(this.options.extensions, (ext: string) => this._parseExtension(ext));
     }
   }
 
@@ -118,24 +112,25 @@ export class Converter {
    * @param {string} [name='']
    * @private
    */
-  private _parseExtension (ext: ShowdownExtension, name?: string|null) {
+  private _parseExtension (ext: (() => ShowdownExtension)|ShowdownExtension[]|ShowdownExtension|string, name?: string|null) {
 
     name = name || null;
+
     // If it's a string, the extension was previously loaded
     if (isString(ext)) {
       ext = stdExtName(ext);
       name = ext;
 
       // LEGACY_SUPPORT CODE
-      if (privateGlobals.extensions[ext]) {
+      if (showdown.extensions[ext]) {
         console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
           'Please inform the developer that the extension should be updated!');
         this.legacyExtensionLoading(showdown.extensions[ext], ext);
         return;
       // END LEGACY SUPPORT CODE
 
-      } else if (!isUndefined(showdown.extensions[ext])) {
-        ext = showdown.extensions[ext];
+      } else if (!isUndefined(privateGlobals.extensions[ext])) {
+        ext = privateGlobals.extensions[ext];
 
       } else {
         throw Error('Extension "' + ext + '" could not be loaded. It was either not found or is not a valid extension.');
@@ -166,10 +161,12 @@ export class Converter {
           this.outputModifiers.push(ext[i]);
           break;
       }
-      if (ext[i].hasOwnProperty('listeners')) {
-        for (var ln in ext[i].listeners) {
-          if (ext[i].listeners.hasOwnProperty(ln)) {
-            this.listen(ln, ext[i].listeners[ln]);
+
+      let listeners = ext[i].listeners;
+      if (listeners !== undefined) {
+        for (var ln in listeners) {
+          if (listeners.hasOwnProperty(ln)) {
+            this.listen(ln, listeners[ln]);
           }
         }
       }
@@ -182,7 +179,7 @@ export class Converter {
    * @param {*} ext
    * @param {string} name
    */
-  public legacyExtensionLoading (ext, name) {
+  public legacyExtensionLoading (ext: ((c: Converter) => ShowdownExtension)|ShowdownExtension|ShowdownExtension[], name: string) {
     if (typeof ext === 'function') {
       ext = ext(new Converter());
     }
@@ -282,6 +279,11 @@ export class Converter {
       return text;
     }
 
+    // check if options.ghMentionsLink is a string
+    if (!isString(this.options.ghMentionsLink)) {
+      throw new Error('ghMentionsLink option must be a string');
+    }
+
     var globals = {
       gHtmlBlocks:     [],
       gHtmlMdBlocks:   [],
@@ -338,7 +340,7 @@ export class Converter {
     text = text.replace(/^[ \t]+$/mg, '');
 
     //run languageExtensions
-    forEach(this.langExtensions, (ext) => {
+    forEach(this.langExtensions, (ext: ShowdownExtension) => {
       text = makehtml_runExtension(ext, text, this.options, globals);
     });
 
@@ -363,7 +365,7 @@ export class Converter {
     text = makehtml_completeHTMLDocument(text, this.options, globals);
 
     // Run output modifiers
-    forEach(this.outputModifiers, (ext) => {
+    forEach(this.outputModifiers, (ext: ShowdownExtension) => {
       text = makehtml_runExtension(ext, text, this.options, globals);
     });
 
@@ -377,7 +379,7 @@ export class Converter {
    * @param src
    * @returns {string}
    */
-  public makeMarkdown (src: string) {
+  public makeMarkdown (src: string, rootDocument?: Document) {
 
     // replace \r\n with \n
     src = src.replace(/\r\n/g, '\n');
@@ -388,7 +390,7 @@ export class Converter {
     // ex: <em>this is</em> <strong>sparta</strong>
     src = src.replace(/>[ \t]+</, '>¨NBSP;<');
 
-    var doc = document.createElement('div');
+    var doc = (rootDocument || document).createElement('div');
     doc.innerHTML = src;
 
     var globals = {
@@ -525,12 +527,10 @@ export class Converter {
     }
     var preset = privateGlobals.flavor[name];
     this.setConvFlavor = name;
-    for (var option in preset) {
-      if (preset.hasOwnProperty(option)) {
-        let k = option as keyof ShowdownOptions;
-        this.options[k] = preset[k];
-      }
-    }
+    this.options = {
+      ...privateGlobals.globalOptions,
+      ...preset
+    };
   };
 
   /**
