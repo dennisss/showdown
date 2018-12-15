@@ -9,7 +9,7 @@
 		"noImplicitAny": true,
 		"strict": true,
 		"esModuleInterop": true,
-		"outDir": "./build/",
+		"outDir": "./dist/",
 		"importHelpers": true,
 		"declaration": true,
 		"noEmitOnError": false
