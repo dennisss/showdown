@@ -1,4 +1,7 @@
-export function makeMarkdown_links (node, globals) {
+import { ConverterGlobals } from '../../types';
+import { makeMarkdown_node } from './node';
+
+export function makeMarkdown_links (node: Element, globals: ConverterGlobals) {
   'use strict';
 
   var txt = '';

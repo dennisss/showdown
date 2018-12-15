@@ -1,7 +1,10 @@
-export function makeMarkdown_codeBlock (node: Node, globals: any) {
+export function makeMarkdown_codeBlock (node: Element, globals: any) {
   'use strict';
 
   var lang = node.getAttribute('language'),
-      num  = node.getAttribute('precodenum');
+      numStr  = node.getAttribute('precodenum');
+
+  let num = parseInt(numStr || '');
+    
   return '```' + lang + '\n' + globals.preList[num] + '\n```';
 }

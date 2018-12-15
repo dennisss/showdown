@@ -1,9 +1,9 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterOptions, ConverterGlobals, ShowdownExtension } from '../../types';
 
 /**
  * Run extension
  */
-export function makehtml_runExtension (ext, text: string, options: ConverterOptions, globals: ConverterGlobals) {
+export function makehtml_runExtension (ext: ShowdownExtension, text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (ext.filter) {

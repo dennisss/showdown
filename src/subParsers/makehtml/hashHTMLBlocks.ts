@@ -42,7 +42,7 @@ export function makehtml_hashHTMLBlocks (text: string, options: ConverterOptions
         'video',
         'p'
       ],
-      repFunc = function (wholeMatch, match, left, right) {
+      repFunc = function (wholeMatch: string, match: string, left: string, right: string) {
         var txt = wholeMatch;
         // check if this html element is marked as markdown
         // if so, it's contents should be parsed as markdown

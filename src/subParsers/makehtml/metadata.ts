@@ -12,7 +12,7 @@ export function makehtml_metadata (text: string, options: ConverterOptions, glob
 
   text = globals.converter._dispatch('makehtml.metadata.before', text, options, globals).getText();
 
-  function parseMetadataContents (content) {
+  function parseMetadataContents (content: string) {
     // raw is raw so it's not changed in any way
     globals.metadata.raw = content;
 

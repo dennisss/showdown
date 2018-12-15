@@ -19,7 +19,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
    * @param {boolean} trimTrailing
    * @returns {string}
    */
-  function processListItems (listStr, trimTrailing) {
+  function processListItems (listStr: string, trimTrailing: boolean) {
     // The $g_list_level global keeps track of when we're inside a list.
     // Each time we enter a list, we increment it; when we leave a list,
     // we decrement. If it's zero, we're not in a list anymore.
@@ -59,8 +59,9 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
       rgx = /(\n)?(^ {0,3})([*+-]|\d+[.])[ \t]+((\[(x|X| )?])?[ \t]*[^\r]+?(\n{1,2}))(?=\n*(¨0|\2([*+-]|\d+[.])[ \t]+))/gm;
     }
 
-    listStr = listStr.replace(rgx, function (wholeMatch, m1, m2, m3, m4, taskbtn, checked) {
-      checked = (checked && checked.trim() !== '');
+    listStr = listStr.replace(rgx, function (wholeMatch: string, m1: string, m2: string, m3: string, m4: string, taskbtn: string, checked: string) {
+      
+      let isChecked = (checked && checked.trim() !== '');
 
       var item = makehtml_outdent(m4, options, globals),
           bulletStyle = '';
@@ -70,7 +71,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
         bulletStyle = ' class="task-list-item" style="list-style-type: none;"';
         item = item.replace(/^[ \t]*\[(x|X| )?]/m, function () {
           var otp = '<input type="checkbox" disabled style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;"';
-          if (checked) {
+          if (isChecked) {
             otp += ' checked';
           }
           otp += '>';
@@ -144,7 +145,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
     return listStr;
   }
 
-  function styleStartNumber (list, listType) {
+  function styleStartNumber (list: string, listType: string) {
     // check if ol and starts by a number different than 1
     if (listType === 'ol') {
       var res = list.match(/^ *(\d+)\./);
@@ -162,7 +163,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
    * @param {boolean} trimTrailing
    * @returns {string}
    */
-  function parseConsecutiveLists (list, listType, trimTrailing) {
+  function parseConsecutiveLists (list: string, listType: string, trimTrailing: boolean) {
     // check if we caught 2 or more consecutive lists by mistake
     // we use the counterRgx, meaning if listType is UL we look for OL and vice versa
     var olRgx = (options.disableForced4SpacesIndentedSublists) ? /^ ?\d+\.[ \t]/gm : /^ {0,3}\d+\.[ \t]/gm,

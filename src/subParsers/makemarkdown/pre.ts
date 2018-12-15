@@ -1,6 +1,6 @@
-export function makeMarkdown_pre (node: Node, globals: any) {
+export function makeMarkdown_pre (node: Element, globals: any) {
   'use strict';
 
-  var num  = node.getAttribute('prenum');
+  var num  = parseInt(node.getAttribute('prenum') || '');
   return '<pre>' + globals.preList[num] + '</pre>';
 }

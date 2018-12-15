@@ -3,12 +3,20 @@ import { makehtml_hashBlock } from './hashBlock';
 import { isString } from '../../helpers';
 import { ConverterOptions, ConverterGlobals } from '../../types';
 
+function niceParseInt(s: string|number|undefined) {
+  if(typeof(s) === 'number') {
+    return s;
+  }
+
+  return parseInt(s || '');
+}
+
 export function makehtml_headers (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.headers.before', text, options, globals).getText();
 
-  var headerLevelStart = (isNaN(parseInt(options.headerLevelStart))) ? 1 : parseInt(options.headerLevelStart),
+  var headerLevelStart = (isNaN(niceParseInt(options.headerLevelStart))) ? 1 : niceParseInt(options.headerLevelStart),
 
   // Set text-style headers:
   //	Header 1
@@ -46,7 +54,7 @@ export function makehtml_headers (text: string, options: ConverterOptions, globa
   //
   var atxStyle = (options.requireSpaceBeforeHeadingText) ? /^(#{1,6})[ \t]+(.+?)[ \t]*#*\n+/gm : /^(#{1,6})[ \t]*(.+?)[ \t]*#*\n+/gm;
 
-  text = text.replace(atxStyle, function (wholeMatch, m1, m2) {
+  text = text.replace(atxStyle, function (wholeMatch: string, m1: string, m2: string) {
     var hText = m2;
     if (options.customizedHeaderId) {
       hText = m2.replace(/\s?\{([^{]+?)}\s*$/, '');
@@ -60,7 +68,7 @@ export function makehtml_headers (text: string, options: ConverterOptions, globa
     return makehtml_hashBlock(header, options, globals);
   });
 
-  function headerId (m) {
+  function headerId (m: string) {
     var title,
         prefix;
 

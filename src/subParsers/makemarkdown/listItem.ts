@@ -1,4 +1,7 @@
-export function makeMarkdown_listItem (node, globals) {
+import { makeMarkdown_node } from './node';
+import { ConverterGlobals } from '../../types';
+
+export function makeMarkdown_listItem (node: Element, globals: ConverterGlobals) {
   'use strict';
 
   var listItemTxt = '';

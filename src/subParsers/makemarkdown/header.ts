@@ -1,4 +1,7 @@
-export function makeMarkdown_header (node, globals, headerLevel) {
+import { makeMarkdown_node } from './node';
+import { ConverterGlobals } from '../../types';
+
+export function makeMarkdown_header (node: Element, globals: ConverterGlobals, headerLevel: number) {
   'use strict';
 
   var headerMark = new Array(headerLevel + 1).join('#'),

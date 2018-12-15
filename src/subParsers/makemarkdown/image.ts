@@ -1,4 +1,6 @@
-export function makeMarkdown_image (node) {
+import { ConverterGlobals } from '../../types';
+
+export function makeMarkdown_image (node: Element, globals: ConverterGlobals) {
   'use strict';
 
   var txt = '';

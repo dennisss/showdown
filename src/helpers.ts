@@ -1,14 +1,10 @@
 import { Converter } from './converter';
 import { ConverterGlobals, ConverterOptions } from './types';
+
 /**
  * showdownjs helper functions
  */
 
-if (typeof this.document === 'undefined' && typeof this.window === 'undefined') {
-  var jsdom = require('jsdom');
-  this.window = new jsdom.JSDOM('', {}).window; // jshint ignore:line
-}
-document = this.window.document;
 
 /**
  * Check if var is string
@@ -305,7 +301,7 @@ export function regexIndexOf (str: string, regex: RegExp, fromIndex: number = 0)
  * @returns {[string,string]}
  * @throws InvalidArgumentError
  */
-export function splitAtIndex(str: string, index: number) {
+export function splitAtIndex (str: string, index: number) {
   'use strict';
   if (!isString(str)) {
     throw 'InvalidArgumentError: first parameter of regexIndexOf function must be a string';
@@ -322,7 +318,7 @@ export function splitAtIndex(str: string, index: number) {
  * @param {string} mail
  * @returns {string}
  */
-export function encodeEmailAddress(mail: string) {
+export function encodeEmailAddress (mail: string) {
   'use strict';
   var encode = [
     function (ch: string) {
@@ -360,7 +356,7 @@ export function encodeEmailAddress(mail: string) {
  * @param padString
  * @returns {string}
  */
-export function padEnd(str: string, targetLength: number, padString?: string) {
+export function padEnd (str: string, targetLength: number, padString?: string) {
   'use strict';
   /*jshint bitwise: false*/
   // eslint-disable-next-line space-infix-ops
@@ -383,7 +379,7 @@ export function padEnd(str: string, targetLength: number, padString?: string) {
  * @param txt
  * @returns {string}
  */
-export function unescapeHTMLEntities(txt: string) {
+export function unescapeHTMLEntities (txt: string) {
   'use strict';
 
   return txt
@@ -393,15 +389,23 @@ export function unescapeHTMLEntities(txt: string) {
     .replace(/&amp;/g, '&');
 };
 
-export function _hashHTMLSpan(html: string, globals) {
+export function _hashHTMLSpan (html: string, globals: ConverterGlobals) {
   return '¨C' + (globals.gHtmlSpans.push(html) - 1) + 'C';
 };
 
 
 
+export interface EventMatches {
+  wholeMatch?: string;
+  text?: string;
+  id?: string|null;
+  url?: string|null;
+  title?: string|null;
+}
+
 export interface EventParams {
   regexp?: RegExp;
-  matches?: object;
+  matches?: EventMatches;
   parsedText?: string;
   converter?: Converter;
   globals?: ConverterGlobals;
@@ -422,7 +426,7 @@ export class Event {
   }
 
   private regexp = this.params.regexp || null;
-  private matches = this.params.matches || {};
+  private matches: EventMatches = this.params.matches || {};
   private options = this.params.options || {};
   private converter = this.params.converter || null;
   private globals = this.params.globals || {};

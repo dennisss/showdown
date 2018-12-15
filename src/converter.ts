@@ -1,5 +1,4 @@
 import { Event, forEach, isString, stdExtName, isUndefined, isArray, unescapeHTMLEntities, EventParams } from './helpers';
-import { extensions } from "./showdown";
 import { makehtml_detab } from "./subParsers/makehtml/detab";
 import { makehtml_runExtension } from "./subParsers/makehtml/runExtension";
 import { makehtml_metadata } from "./subParsers/makehtml/metadata";
@@ -13,6 +12,9 @@ import { makehtml_unhashHTMLSpans } from "./subParsers/makehtml/hashHTMLSpans";
 import { makehtml_unescapeSpecialChars } from "./subParsers/makehtml/unescapeSpecialChars";
 import { makehtml_completeHTMLDocument } from "./subParsers/makehtml/completeHTMLDocument";
 import { ConverterOptions, ShowdownOptions, ShowdownExtension, ConverterGlobals } from './types';
+import { makeMarkdown_node } from './subParsers/makemarkdown/node';
+import { privateGlobals, validate, showdown } from './showdown';
+import { isText } from './node_helpers';
 
 /**
  * Created by Estevao on 31-05-2015.
@@ -35,50 +37,49 @@ export type EventListener = (e: Event) => string|void|undefined;
  * @returns {Converter}
  */
 export class Converter {
-  'use strict';
 
-      /**
-       * Options used by this converter
-       * @private
-       * @type {{}}
-       */
-      private options: ConverterOptions = {};
+  /**
+   * Options used by this converter
+   * @private
+   * @type {{}}
+   */
+  private options: ConverterOptions = {};
 
-      /**
-       * Language extensions used by this converter
-       * @private
-       * @type {Array}
-       */
-      private langExtensions: ShowdownExtension[] = [];
+  /**
+   * Language extensions used by this converter
+   * @private
+   * @type {Array}
+   */
+  private langExtensions: ShowdownExtension[] = [];
 
-      /**
-       * Output modifiers extensions used by this converter
-       * @private
-       * @type {Array}
-       */
-      private outputModifiers: ShowdownExtension[] = [];
+  /**
+   * Output modifiers extensions used by this converter
+   * @private
+   * @type {Array}
+   */
+  private outputModifiers: ShowdownExtension[] = [];
 
-      /**
-       * Event listeners
-       * @private
-       * @type {{}}
-       */
-      private listeners: { [name: string]: EventListener[]; } = {};
+  /**
+   * Event listeners
+   * @private
+   * @type {{}}
+   */
+  private listeners: { [name: string]: EventListener[]; } = {};
 
-      /**
-       * The flavor set in this converter
-       */
-      private setConvFlavor = setFlavor;
+  /**
+   * The flavor set in this converter
+   */
+  private setConvFlavor = privateGlobals.setFlavor;
 
-    /**
-     * Metadata of the document
-     * @type {{parsed: {}, raw: string, format: string}}
-     */
-      metadata: ConverterGlobals['metadata'] = {
-        parsed: {},
-        raw: '',
-        format: ''
-      };
+  /**
+   * Metadata of the document
+   * @type {{parsed: {}, raw: string, format: string}}
+   */
+  metadata: ConverterGlobals['metadata'] = {
+    parsed: {},
+    raw: '',
+    format: ''
+  };
 
   /**
    * Converter constructor
@@ -86,9 +87,10 @@ export class Converter {
    */
   constructor (private converterOptions: ConverterOptions = {}) {
 
-    for (var gOpt in globalOptions) {
-      if (globalOptions.hasOwnProperty(gOpt)) {
-        options[gOpt] = globalOptions[gOpt];
+    for (var gOpt in privateGlobals.globalOptions) {
+      if (privateGlobals.globalOptions.hasOwnProperty(gOpt)) {
+        let k = gOpt as keyof ShowdownOptions;
+        this.options[k] = privateGlobals.globalOptions[k];
       }
     }
 
@@ -96,7 +98,8 @@ export class Converter {
     if (typeof converterOptions === 'object') {
       for (var opt in converterOptions) {
         if (converterOptions.hasOwnProperty(opt)) {
-          options[opt] = converterOptions[opt];
+          let k = opt as keyof ConverterOptions;
+          this.options[k] = converterOptions[k];
         }
       }
     } else {
@@ -105,7 +108,7 @@ export class Converter {
     }
 
     if (this.options.extensions) {
-      forEach(this.options.extensions, this._parseExtension);
+      forEach(this.options.extensions, (ext, name) => this._parseExtension(ext, name));
     }
   }
 
@@ -115,7 +118,7 @@ export class Converter {
    * @param {string} [name='']
    * @private
    */
-  private _parseExtension (ext: ShowdownExtension, name: string = '') {
+  private _parseExtension (ext: ShowdownExtension, name?: string|null) {
 
     name = name || null;
     // If it's a string, the extension was previously loaded
@@ -124,15 +127,15 @@ export class Converter {
       name = ext;
 
       // LEGACY_SUPPORT CODE
-      if (showdown.extensions[ext]) {
+      if (privateGlobals.extensions[ext]) {
         console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
           'Please inform the developer that the extension should be updated!');
         legacyExtensionLoading(showdown.extensions[ext], ext);
         return;
       // END LEGACY SUPPORT CODE
 
-      } else if (!isUndefined(extensions[ext])) {
-        ext = extensions[ext];
+      } else if (!isUndefined(showdown.extensions[ext])) {
+        ext = showdown.extensions[ext];
 
       } else {
         throw Error('Extension "' + ext + '" could not be loaded. It was either not found or is not a valid extension.');
@@ -166,7 +169,7 @@ export class Converter {
       if (ext[i].hasOwnProperty('listeners')) {
         for (var ln in ext[i].listeners) {
           if (ext[i].listeners.hasOwnProperty(ln)) {
-            listen(ln, ext[i].listeners[ln]);
+            this.listen(ln, ext[i].listeners[ln]);
           }
         }
       }
@@ -406,15 +409,15 @@ export class Converter {
       mdDoc += makeMarkdown_node(nodes[i], globals);
     }
 
-    function clean (node) {
+    function clean (node: Node) {
       for (var n = 0; n < node.childNodes.length; ++n) {
         var child = node.childNodes[n];
-        if (child.nodeType === 3) {
-          if (!/\S/.test(child.nodeValue)) {
+        if (isText(child)) {
+          if (!/\S/.test(child.nodeValue || '')) {
             node.removeChild(child);
             --n;
           } else {
-            child.nodeValue = child.nodeValue.split('\n').join(' ');
+            child.nodeValue = (child.nodeValue || '').split('\n').join(' ');
             child.nodeValue = child.nodeValue.replace(/(\s)+/g, '$1');
           }
         } else if (child.nodeType === 1) {
@@ -426,20 +429,23 @@ export class Converter {
     // find all pre tags and replace contents with placeholder
     // we need this so that we can remove all indentation from html
     // to ease up parsing
-    function substitutePreCodeTags (doc) {
+    function substitutePreCodeTags (doc: Document|Element) {
 
       var pres = doc.querySelectorAll('pre'),
-          presPH = [];
+          presPH: string[] = [];
 
       for (var i = 0; i < pres.length; ++i) {
 
-        if (pres[i].childElementCount === 1 && pres[i].firstChild.tagName.toLowerCase() === 'code') {
-          var content = pres[i].firstChild.innerHTML.trim(),
-              language = pres[i].firstChild.getAttribute('data-language') || '';
+        if (pres[i].childElementCount === 1 && (pres[i].firstChild! as Element).tagName.toLowerCase() === 'code') {
+
+          let el = pres[i].firstChild! as Element;
+
+          var content = el.innerHTML.trim(),
+              language = el.getAttribute('data-language') || '';
 
           // if data-language attribute is not defined, then we look for class language-*
           if (language === '') {
-            var classes = pres[i].firstChild.className.split(' ');
+            var classes = el.className.split(' ');
             for (var c = 0; c < classes.length; ++c) {
               var matches = classes[c].match(/^language-(.+)$/);
               if (matches !== null) {
@@ -514,14 +520,15 @@ export class Converter {
    * @param {string} name
    */
   public setFlavor (name: string) {
-    if (!flavor.hasOwnProperty(name)) {
+    if (!privateGlobals.flavor.hasOwnProperty(name)) {
       throw Error(name + ' flavor was not found');
     }
-    var preset = flavor[name];
-    setConvFlavor = name;
+    var preset = privateGlobals.flavor[name];
+    this.setConvFlavor = name;
     for (var option in preset) {
       if (preset.hasOwnProperty(option)) {
-        options[option] = preset[option];
+        let k = option as keyof ShowdownOptions;
+        this.options[k] = preset[k];
       }
     }
   };
@@ -534,7 +541,6 @@ export class Converter {
     return this.setConvFlavor;
   };
 
-  // XXX: The original JS version of this is not typesafe
   /**
    * Remove an extension from THIS converter.
    * Note: This is a costly operation. It's better to initialize a new converter
@@ -549,12 +555,12 @@ export class Converter {
       var ext = extension[a];
       for (var i = 0; i < this.langExtensions.length; ++i) {
         if (this.langExtensions[i] === ext) {
-          this.langExtensions[i].splice(i, 1);
+          this.langExtensions.splice(i, 1);
         }
       }
-      for (var ii = 0; ii < this.outputModifiers.length; ++i) {
+      for (var ii = 0; ii < this.outputModifiers.length; ++ii) {
         if (this.outputModifiers[ii] === ext) {
-          this.outputModifiers[ii].splice(i, 1);
+          this.outputModifiers.splice(ii, 1);
         }
       }
     }
@@ -576,11 +582,11 @@ export class Converter {
    * @param raw
    * @returns {string|{}}
    */
-  public getMetadata (raw) {
+  public getMetadata (raw?: boolean) {
     if (raw) {
-      return metadata.raw;
+      return this.metadata.raw;
     } else {
-      return metadata.parsed;
+      return this.metadata.parsed;
     }
   };
 
@@ -589,7 +595,7 @@ export class Converter {
    * @returns {string}
    */
   private getMetadataFormat () {
-    return metadata.format;
+    return this.metadata.format;
   };
 
   /**
@@ -597,8 +603,8 @@ export class Converter {
    * @param {string} key
    * @param {string} value
    */
-  private _setMetadataPair (key, value) {
-    metadata.parsed[key] = value;
+  private _setMetadataPair (key: string, value: string) {
+    this.metadata.parsed[key] = value;
   };
 
   /**
@@ -606,14 +612,14 @@ export class Converter {
    * @param {string} format
    */
   private _setMetadataFormat (format: string) {
-    metadata.format = format;
+    this.metadata.format = format;
   };
 
   /**
    * Private: set metadata raw text
    * @param {string} raw
    */
-  private _setMetadataRaw (raw) {
-    metadata.raw = raw;
+  private _setMetadataRaw (raw: string) {
+    this.metadata.raw = raw;
   }
 }

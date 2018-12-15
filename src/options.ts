@@ -4,93 +4,103 @@ import { ShowdownOptions } from './types';
  * Created by Tivie on 13-07-2015.
  */
 
-export function getDefaultOpts (simple: boolean): ShowdownOptions {
+export interface ShowdownOptionDef {
+  defaultValue: boolean;
+  description: string;
+  type: string;
+}
+
+export type ShowdownOptionDefs = { [K in keyof ShowdownOptions] : ShowdownOptionDef };
+
+export function getDefaultOpts (simple: false): ShowdownOptionDefs;
+export function getDefaultOpts (simple: true): ShowdownOptions;
+export function getDefaultOpts (simple: boolean): ShowdownOptions|ShowdownOptionDefs {
   'use strict';
 
-  var defaultOptions = {
+  var defaultOptions: ShowdownOptionDefs = {
     omitExtraWLInCodeBlocks: {
       defaultValue: false,
-      describe: 'Omit the default extra whiteline added to code blocks',
+      description: 'Omit the default extra whiteline added to code blocks',
       type: 'boolean'
     },
     noHeaderId: {
       defaultValue: false,
-      describe: 'Turn on/off generated header id',
+      description: 'Turn on/off generated header id',
       type: 'boolean'
     },
     prefixHeaderId: {
       defaultValue: false,
-      describe: 'Add a prefix to the generated header ids. Passing a string will prefix that string to the header id. Setting to true will add a generic \'section-\' prefix',
+      description: 'Add a prefix to the generated header ids. Passing a string will prefix that string to the header id. Setting to true will add a generic \'section-\' prefix',
       type: 'string'
     },
     rawPrefixHeaderId: {
       defaultValue: false,
-      describe: 'Setting this option to true will prevent showdown from modifying the prefix. This might result in malformed IDs (if, for instance, the " char is used in the prefix)',
+      description: 'Setting this option to true will prevent showdown from modifying the prefix. This might result in malformed IDs (if, for instance, the " char is used in the prefix)',
       type: 'boolean'
     },
     ghCompatibleHeaderId: {
       defaultValue: false,
-      describe: 'Generate header ids compatible with github style (spaces are replaced with dashes, a bunch of non alphanumeric chars are removed)',
+      description: 'Generate header ids compatible with github style (spaces are replaced with dashes, a bunch of non alphanumeric chars are removed)',
       type: 'boolean'
     },
     rawHeaderId: {
       defaultValue: false,
-      describe: 'Remove only spaces, \' and " from generated header ids (including prefixes), replacing them with dashes (-). WARNING: This might result in malformed ids',
+      description: 'Remove only spaces, \' and " from generated header ids (including prefixes), replacing them with dashes (-). WARNING: This might result in malformed ids',
       type: 'boolean'
     },
     headerLevelStart: {
       defaultValue: false,
-      describe: 'The header blocks level start',
+      description: 'The header blocks level start',
       type: 'integer'
     },
     parseImgDimensions: {
       defaultValue: false,
-      describe: 'Turn on/off image dimension parsing',
+      description: 'Turn on/off image dimension parsing',
       type: 'boolean'
     },
     simplifiedAutoLink: {
       defaultValue: false,
-      describe: 'Turn on/off GFM autolink style',
+      description: 'Turn on/off GFM autolink style',
       type: 'boolean'
     },
     literalMidWordUnderscores: {
       defaultValue: false,
-      describe: 'Parse midword underscores as literal underscores',
+      description: 'Parse midword underscores as literal underscores',
       type: 'boolean'
     },
     literalMidWordAsterisks: {
       defaultValue: false,
-      describe: 'Parse midword asterisks as literal asterisks',
+      description: 'Parse midword asterisks as literal asterisks',
       type: 'boolean'
     },
     strikethrough: {
       defaultValue: false,
-      describe: 'Turn on/off strikethrough support',
+      description: 'Turn on/off strikethrough support',
       type: 'boolean'
     },
     tables: {
       defaultValue: false,
-      describe: 'Turn on/off tables support',
+      description: 'Turn on/off tables support',
       type: 'boolean'
     },
     tablesHeaderId: {
       defaultValue: false,
-      describe: 'Add an id to table headers',
+      description: 'Add an id to table headers',
       type: 'boolean'
     },
     ghCodeBlocks: {
       defaultValue: true,
-      describe: 'Turn on/off GFM fenced code blocks support',
+      description: 'Turn on/off GFM fenced code blocks support',
       type: 'boolean'
     },
     tasklists: {
       defaultValue: false,
-      describe: 'Turn on/off GFM tasklist support',
+      description: 'Turn on/off GFM tasklist support',
       type: 'boolean'
     },
     smoothLivePreview: {
       defaultValue: false,
-      describe: 'Prevents weird effects in live previews due to incomplete input',
+      description: 'Prevents weird effects in live previews due to incomplete input',
       type: 'boolean'
     },
     smartIndentationFix: {
@@ -167,22 +177,22 @@ export function getDefaultOpts (simple: boolean): ShowdownOptions {
   if (simple === false) {
     return JSON.parse(JSON.stringify(defaultOptions));
   }
-  var ret = {};
+  var ret: ShowdownOptions = {};
   for (var opt in defaultOptions) {
     if (defaultOptions.hasOwnProperty(opt)) {
-      ret[opt] = defaultOptions[opt].defaultValue;
+      ret[opt as keyof ShowdownOptions] = defaultOptions[opt].defaultValue;
     }
   }
   return ret;
 }
 
-export function allOptionsOn () {
+export function allOptionsOn (): ShowdownOptions {
   'use strict';
   var options = getDefaultOpts(true),
-      ret: { [K in keyof ShowdownOptions] : boolean } = {};
+      ret: ShowdownOptions = {};
   for (var opt in options) {
     if (options.hasOwnProperty(opt)) {
-      ret[opt] = true;
+      ret[opt as keyof ShowdownOptions] = true;
     }
   }
   return ret;

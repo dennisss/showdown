@@ -14,7 +14,7 @@ export function makehtml_paragraphs (text: string, options: ConverterOptions, gl
   text = text.replace(/\n+$/g, '');
 
   var grafs = text.split(/\n{2,}/g),
-      grafsOut = [],
+      grafsOut: string[] = [],
       end = grafs.length; // Wrap <p> tags
 
   for (var i = 0; i < end; i++) {
@@ -43,7 +43,7 @@ export function makehtml_paragraphs (text: string, options: ConverterOptions, gl
     // use RegExp.test instead of string.search because of QML bug
     while (/¨(K|G)(\d+)\1/.test(grafsOutIt)) {
       var delim = RegExp.$1,
-          num   = RegExp.$2;
+          num   = parseInt(RegExp.$2);
 
       if (delim === 'K') {
         blockText = globals.gHtmlBlocks[num];

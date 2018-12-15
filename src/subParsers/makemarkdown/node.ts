@@ -13,6 +13,7 @@ import { makeMarkdown_codeSpan } from './codeSpan';
 import { makeMarkdown_emphasis } from './emphasis';
 import { makeMarkdown_links } from './links';
 import { makeMarkdown_image } from './image';
+import { isText, isComment, isElement } from '../../node_helpers';
 
 export function makeMarkdown_node (node: Node, globals: any, spansOnly?: boolean) {
   'use strict';
@@ -22,17 +23,17 @@ export function makeMarkdown_node (node: Node, globals: any, spansOnly?: boolean
   var txt = '';
 
   // edge case of text without wrapper paragraph
-  if (node.nodeType === 3) {
+  if (isText(node)) {
     return makeMarkdown_txt(node, globals);
   }
 
   // HTML comment
-  if (node.nodeType === 8) {
+  if (isComment(node)) {
     return '<!--' + node.data + '-->\n\n';
   }
 
   // process only node elements
-  if (node.nodeType !== 1) {
+  if (!isElement(node)) {
     return '';
   }
 

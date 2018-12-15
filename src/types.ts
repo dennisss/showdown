@@ -45,6 +45,12 @@ interface FilterExtension extends Extension {
 	filter?: (text: string, converter: Converter, options?: ConverterOptions) => string;
 }
 
+
+interface ListenerExtension extends Extension {
+	listeners?: { [name: string]: Function; };
+}
+
+
 /**
  * Defines a plugin/extension
  * Each single extension can be one of two types:
@@ -54,7 +60,7 @@ interface FilterExtension extends Extension {
  *
  * Each extension can provide two combinations of interfaces for showdown.
  */
-export interface ShowdownExtension extends RegexReplaceExtension, FilterExtension {
+export interface ShowdownExtension extends RegexReplaceExtension, FilterExtension, ListenerExtension {
 }
 
 
@@ -279,6 +285,13 @@ export interface ShowdownOptions {
 	// XXX: Things not in the DefinitelyTyped yet
 	splitAdjacentBlockquotes?: boolean;
 	completeHTMLDocument?: boolean;
+	tableHeaderId?: boolean;
+	emoji?: boolean;
+	underline?: boolean;
+	metadata?: boolean;
+	rawPrefixHeaderId?: boolean;
+	rawHeaderId?: boolean;
+	encodeEmails?: boolean;
 }
 
 
@@ -293,7 +306,10 @@ export interface ConverterGlobals {
 	gHtmlSpans: string[];
 	gUrls: { [id: string]: string; };
 	gTitles: { [id: string]: string };
-	gDimensions: { [id: string]: string };
+	gDimensions: { [id: string]: {
+		width: string;
+		height: string;
+	} };
 	gListLevel: number;
 	hashLinkCounts: { [title: string]: number; };
 	langExtensions: ShowdownExtension[];

@@ -15,12 +15,12 @@ export function makehtml_images (text: string, options: ConverterOptions, global
       referenceRegExp   = /!\[([^\]]*?)] ?(?:\n *)?\[([\s\S]*?)]()()()()()/g,
       refShortcutRegExp = /!\[([^\[\]]+)]()()()()()/g;
 
-  function writeImageTagBase64 (wholeMatch, altText, linkId, url, width, height, m5, title) {
+  function writeImageTagBase64 (wholeMatch: string, altText: string, linkId: string, url: string, width: string, height: string, m5: string, title: string) {
     url = url.replace(/\s/g, '');
     return writeImageTag (wholeMatch, altText, linkId, url, width, height, m5, title);
   }
 
-  function writeImageTag (wholeMatch, altText, linkId, url, width, height, m5, title) {
+  function writeImageTag (wholeMatch: string, altText: string, linkId: string, url: string, width: string, height: string, m5: string, title: string) {
 
     var gUrls   = globals.gUrls,
         gTitles = globals.gTitles,

@@ -15,7 +15,7 @@ export function makehtml_stripLinkDefinitions (text: string, options: ConverterO
   // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
   text += '¨0';
 
-  var replaceFunc = function (wholeMatch, linkId, url, width, height, blankLines, title) {
+  var replaceFunc = function (wholeMatch: string, linkId: string, url: string, width: string, height: string, blankLines: string, title: string) {
     linkId = linkId.toLowerCase();
     if (url.match(/^data:.+?\/.+?;base64,/)) {
       // remove newlines
@@ -53,4 +53,4 @@ export function makehtml_stripLinkDefinitions (text: string, options: ConverterO
   text = text.replace(/¨0/, '');
 
   return text;
-});
+}

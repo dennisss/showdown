@@ -14,7 +14,7 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
     //singeColTblRgx = /^ {0,3}\|.+\|\n {0,3}\|[ \t]*:?[ \t]*(?:[-=]){2,}[ \t]*:?[ \t]*\|[ \t]*\n(?: {0,3}\|.+\|\n)+(?:\n\n|¨0)/gm;
       singeColTblRgx = /^ {0,3}\|.+\|[ \t]*\n {0,3}\|[ \t]*:?[ \t]*(?:[-=]){2,}[ \t]*:?[ \t]*\|[ \t]*\n( {0,3}\|.+\|[ \t]*\n)*(?:\n|¨0)/gm;
 
-  function parseStyles (sLine) {
+  function parseStyles (sLine: string) {
     if (/^:[ \t]*--*$/.test(sLine)) {
       return ' style="text-align:left;"';
     } else if (/^--*[ \t]*:[ \t]*$/.test(sLine)) {
@@ -26,7 +26,7 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
     }
   }
 
-  function parseHeaders (header, style) {
+  function parseHeaders (header: string, style: string) {
     var id = '';
     header = header.trim();
     // support both tablesHeaderId and tableHeaderId due to error in documentation so we don't break backwards compatibility
@@ -38,12 +38,12 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
     return '<th' + id + style + '>' + header + '</th>\n';
   }
 
-  function parseCells (cell, style) {
+  function parseCells (cell: string, style: string) {
     var subText = makehtml_spanGamut(cell, options, globals);
     return '<td' + style + '>' + subText + '</td>\n';
   }
 
-  function buildTable (headers, cells) {
+  function buildTable (headers: string[], cells: string[][]) {
     var tb = '<table>\n<thead>\n<tr>\n',
         tblLgn = headers.length;
 
@@ -63,8 +63,8 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
     return tb;
   }
 
-  function parseTable (rawTable) {
-    var i, tableLines = rawTable.split('\n');
+  function parseTable (rawTable: string) {
+    var i: number, tableLines = rawTable.split('\n');
 
     for (i = 0; i < tableLines.length; ++i) {
       // strip wrong first and last column if wrapped tables are used
@@ -145,4 +145,4 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
   text = globals.converter._dispatch('makehtml.tables.after', text, options, globals).getText();
 
   return text;
-});
+}

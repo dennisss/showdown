@@ -1,20 +1,20 @@
 import { makeMarkdown_tableCell } from './tableCell';
 import { padEnd } from '../../helpers';
 
-export function makeMarkdown_table (node: Node, globals: any) {
+export function makeMarkdown_table (node: Element, globals: any) {
   'use strict';
 
   var txt = '',
-      tableArray = [[], []],
+      tableArray: [ string[], string[] ] = [[], []],
       headings   = node.querySelectorAll('thead>tr>th'),
       rows       = node.querySelectorAll('tbody>tr'),
-      i, ii;
+      i: number, ii: number;
   for (i = 0; i < headings.length; ++i) {
     var headContent = makeMarkdown_tableCell(headings[i], globals),
         allign = '---';
 
     if (headings[i].hasAttribute('style')) {
-      var style = headings[i].getAttribute('style').toLowerCase().replace(/\s/g, '');
+      var style = headings[i].getAttribute('style')!.toLowerCase().replace(/\s/g, '');
       switch (style) {
         case 'text-align:left;':
           allign = ':---';

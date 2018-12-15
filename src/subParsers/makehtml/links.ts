@@ -1,4 +1,4 @@
-import { isUndefined, regexes, escapeCharactersCallback, encodeEmailAddress, isString, _hashHTMLSpan } from '../../helpers';
+import { isUndefined, regexes, escapeCharactersCallback, encodeEmailAddress, isString, _hashHTMLSpan, Event } from '../../helpers';
 import { makehtml_codeSpans } from './codeSpans';
 import { makehtml_emoji } from './emoji';
 import { makehtml_underline } from './underline';
@@ -34,9 +34,9 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * @param {{}} globals
    * @returns {Function}
    */
-  function replaceAnchorTag (rgx, evtRootName, options, globals, emptyCase) {
-    emptyCase = !!emptyCase;
-    return function (wholeMatch, text, id, url, m5, m6, title) {
+  function replaceAnchorTag (rgx: RegExp, evtRootName: string, options: ConverterOptions, globals: ConverterGlobals, emptyCase: boolean = false) {
+
+    return function (wholeMatch: string, text: string, id: string, url: string, m5: string, m6: string, title: string|null) {
       // bail we we find 2 newlines somewhere
       if (/\n\n/.test(wholeMatch)) {
         return wholeMatch;
@@ -61,7 +61,7 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * @param {{}} globals
    * @returns {Event|*}
    */
-  function createEvent (rgx, evtName, wholeMatch, text, id, url, title, options, globals) {
+  function createEvent (rgx: RegExp, evtName: string, wholeMatch: string, text: string, id: string|null, url: string, title: string|null, options: ConverterOptions, globals: ConverterGlobals) {
     return globals.converter._dispatch(evtName, wholeMatch, options, globals, {
       regexp: rgx,
       matches: {
@@ -82,14 +82,19 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * @param {boolean} emptyCase
    * @returns {string}
    */
-  function writeAnchorTag (evt, options, globals, emptyCase) {
+  function writeAnchorTag (evt: Event, options: ConverterOptions, globals: ConverterGlobals, emptyCase?: boolean) {
 
-    var wholeMatch = evt.getMatches().wholeMatch;
+    var wholeMatch = evt.getMatches().wholeMatch || '';
     var text = evt.getMatches().text;
     var id = evt.getMatches().id;
     var url = evt.getMatches().url;
     var title = evt.getMatches().title;
     var target = '';
+
+    // TODO: We should convert this to a typecheck by making a new type of event that always has matches filled int
+    if (text === undefined) {
+      throw new Error('Malformed event')
+    }
 
     if (!title) {
       title = '';
@@ -151,7 +156,7 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
     return result;
   }
 
-  var evtRootName = 'makehtml.links';
+  const evtRootName = 'makehtml.links';
 
   /**
    * Turn Markdown link shortcuts into XHTML <a> tags.
@@ -197,29 +202,29 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * TODO WRITE THIS DOCUMENTATION
    */
   export function makehtml_links_inline (text: string, options: ConverterOptions, globals: ConverterGlobals) {
-    var evtRootName = evtRootName + '.inline';
+    var evtBaseName = evtRootName + '.inline';
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     // 1. Look for empty cases: []() and [empty]() and []("title")
     var rgxEmpty = /\[(.*?)]()()()()\(<? ?>? ?(?:["'](.*)["'])?\)/g;
-    text = text.replace(rgxEmpty, replaceAnchorTag(rgxEmpty, evtRootName, options, globals, true));
+    text = text.replace(rgxEmpty, replaceAnchorTag(rgxEmpty, evtBaseName, options, globals, true));
 
     // 2. Look for cases with crazy urls like ./image/cat1).png
     var rgxCrazy = /\[((?:\[[^\]]*]|[^\[\]])*)]()\s?\([ \t]?<([^>]*)>(?:[ \t]*((["'])([^"]*?)\5))?[ \t]?\)/g;
-    text = text.replace(rgxCrazy, replaceAnchorTag(rgxCrazy, evtRootName, options, globals));
+    text = text.replace(rgxCrazy, replaceAnchorTag(rgxCrazy, evtBaseName, options, globals));
 
     // 3. inline links with no title or titles wrapped in ' or ":
     // [text](url.com) || [text](<url.com>) || [text](url.com "title") || [text](<url.com> "title")
     //var rgx2 = /\[[ ]*[\s]?[ ]*([^\n\[\]]*?)[ ]*[\s]?[ ]*] ?()\(<?[ ]*[\s]?[ ]*([^\s'"]*)>?(?:[ ]*[\n]?[ ]*()(['"])(.*?)\5)?[ ]*[\s]?[ ]*\)/; // this regex is too slow!!!
     var rgx2 = /\[([\S ]*?)]\s?()\( *<?([^\s'"]*?(?:\([\S]*?\)[\S]*?)?)>?\s*(?:()(['"])(.*?)\5)? *\)/g;
-    text = text.replace(rgx2, replaceAnchorTag(rgx2, evtRootName, options, globals));
+    text = text.replace(rgx2, replaceAnchorTag(rgx2, evtBaseName, options, globals));
 
     // 4. inline links with titles wrapped in (): [foo](bar.com (title))
     var rgx3 = /\[([\S ]*?)]\s?()\( *<?([^\s'"]*?(?:\([\S]*?\)[\S]*?)?)>?\s+()()\((.*?)\) *\)/g;
-    text = text.replace(rgx3, replaceAnchorTag(rgx3, evtRootName, options, globals));
+    text = text.replace(rgx3, replaceAnchorTag(rgx3, evtBaseName, options, globals));
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
 
     return text;
   }
@@ -228,14 +233,14 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * TODO WRITE THIS DOCUMENTATION
    */
   export function makehtml_links_reference (text: string, options: ConverterOptions, globals: ConverterGlobals) {
-    var evtRootName = evtRootName + '.reference';
+    var evtBaseName = evtRootName + '.reference';
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     var rgx = /\[((?:\[[^\]]*]|[^\[\]])*)] ?(?:\n *)?\[(.*?)]()()()()/g;
-    text = text.replace(rgx, replaceAnchorTag(rgx, evtRootName, options, globals));
+    text = text.replace(rgx, replaceAnchorTag(rgx, evtBaseName, options, globals));
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
 
     return text;
   }
@@ -244,14 +249,14 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * TODO WRITE THIS DOCUMENTATION
    */
   export function makehtml_links_referenceShortcut (text: string, options: ConverterOptions, globals: ConverterGlobals) {
-    var evtRootName = evtRootName + '.referenceShortcut';
+    var evtBaseName = evtRootName + '.referenceShortcut';
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     var rgx = /\[([^\[\]]+)]()()()()()/g;
-    text = text.replace(rgx, replaceAnchorTag(rgx, evtRootName, options, globals));
+    text = text.replace(rgx, replaceAnchorTag(rgx, evtBaseName, options, globals));
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
 
     return text;
   }
@@ -260,13 +265,13 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * TODO WRITE THIS DOCUMENTATION
    */
   export function makehtml_links_ghMentions (text: string, options: ConverterOptions, globals: ConverterGlobals) {
-    var evtRootName = evtRootName + 'ghMentions';
+    var evtBaseName = evtRootName + 'ghMentions';
 
     if (!options.ghMentions) {
       return text;
     }
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     var rgx = /(^|\s)(\\)?(@([a-z\d]+(?:[a-z\d._-]+?[a-z\d]+)*))/gi;
 
@@ -282,12 +287,12 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
         throw new Error('ghMentionsLink option must be a string');
       }
       var url = options.ghMentionsLink.replace(/{u}/g, username);
-      var evt = createEvent(rgx, evtRootName + '.captureStart', wholeMatch, mentions, null, url, null, options, globals);
+      var evt = createEvent(rgx, evtBaseName + '.captureStart', wholeMatch, mentions, null, url, null, options, globals);
       // captureEnd Event is triggered inside writeAnchorTag function
       return st + writeAnchorTag(evt, options, globals);
     });
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
 
     return text;
   }
@@ -296,16 +301,16 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
    * TODO WRITE THIS DOCUMENTATION
    */
   export function makehtml_links_angleBrackets (text: string, options: ConverterOptions, globals: ConverterGlobals) {
-    var evtRootName = 'makehtml.links.angleBrackets';
+    var evtBaseName = evtRootName + '.angleBrackets';
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     // 1. Parse links first
     var urlRgx  = /<(((?:https?|ftp):\/\/|www\.)[^'">\s]+)>/gi;
-    text = text.replace(urlRgx, function (wholeMatch, url, urlStart) {
+    text = text.replace(urlRgx, function (wholeMatch: string, url: string, urlStart: string) {
       var text = url;
       url = (urlStart === 'www.') ? 'http://' + url : url;
-      var evt = createEvent(urlRgx, evtRootName + '.captureStart', wholeMatch, text, null, url, null, options, globals);
+      var evt = createEvent(urlRgx, evtBaseName + '.captureStart', wholeMatch, text, null, url, null, options, globals);
       return writeAnchorTag(evt, options, globals);
     });
 
@@ -320,11 +325,11 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
       } else {
         url = url + mail;
       }
-      var evt = createEvent(mailRgx, evtRootName + '.captureStart', wholeMatch, mail, null, url, null, options, globals);
+      var evt = createEvent(mailRgx, evtBaseName + '.captureStart', wholeMatch, mail, null, url, null, options, globals);
       return writeAnchorTag(evt, options, globals);
     });
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
     return text;
   }
 
@@ -337,9 +342,9 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
       return text;
     }
 
-    var evtRootName = 'makehtml.links.naked';
+    var evtBaseName = evtRootName + '.naked';
 
-    text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.start', text, options, globals).getText();
 
     // 2. Now we check for
     // we also include leading markdown magic chars [_*~] for cases like __https://www.google.com/foobar__
@@ -401,7 +406,7 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
       text = text.replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
 
       // finally we dispatch the event
-      var evt = createEvent(urlRgx, evtRootName + '.captureStart', wholeMatch, text, null, url, null, options, globals);
+      var evt = createEvent(urlRgx, evtBaseName + '.captureStart', wholeMatch, text, null, url, null, options, globals);
 
       // and return the link tag, with the leadingMDChars and  suffix. The leadingMDChars are added at the end too because
       // we consumed those characters in the regexp
@@ -419,12 +424,12 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
       } else {
         url = url + mail;
       }
-      var evt = createEvent(mailRgx, evtRootName + '.captureStart', wholeMatch, mail, null, url, null, options, globals);
+      var evt = createEvent(mailRgx, evtBaseName + '.captureStart', wholeMatch, mail, null, url, null, options, globals);
       return leadingChar + writeAnchorTag(evt, options, globals);
     });
 
 
-    text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
+    text = globals.converter._dispatch(evtBaseName + '.end', text, options, globals).getText();
     return text;
   }
 
