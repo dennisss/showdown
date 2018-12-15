@@ -281,11 +281,6 @@ import { ConverterOptions, ConverterGlobals } from '../../types';
         return st + mentions;
       }
 
-      // check if options.ghMentionsLink is a string
-      // TODO Validation should be done at initialization not at runtime
-      if (!isString(options.ghMentionsLink)) {
-        throw new Error('ghMentionsLink option must be a string');
-      }
       var url = options.ghMentionsLink.replace(/{u}/g, username);
       var evt = createEvent(rgx, evtBaseName + '.captureStart', wholeMatch, mentions, null, url, null, options, globals);
       // captureEnd Event is triggered inside writeAnchorTag function
