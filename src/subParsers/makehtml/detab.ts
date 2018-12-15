@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Convert all tabs to spaces
  */
-showdown.subParser('makehtml.detab', function (text, options, globals) {
+export function makehtml_detab (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.detab.before', text, options, globals).getText();
 
@@ -30,4 +32,4 @@ showdown.subParser('makehtml.detab', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.detab.after', text, options, globals).getText();
   return text;
-});
+}

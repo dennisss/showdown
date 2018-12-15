@@ -1,4 +1,9 @@
-showdown.subParser('makehtml.headers', function (text, options, globals) {
+import { makehtml_spanGamut } from './spanGamut';
+import { makehtml_hashBlock } from './hashBlock';
+import { isString } from '../../helpers';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_headers (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.headers.before', text, options, globals).getText();
@@ -17,19 +22,19 @@ showdown.subParser('makehtml.headers', function (text, options, globals) {
 
   text = text.replace(setextRegexH1, function (wholeMatch, m1) {
 
-    var spanGamut = showdown.subParser('makehtml.spanGamut')(m1, options, globals),
+    var spanGamut = makehtml_spanGamut(m1, options, globals),
         hID = (options.noHeaderId) ? '' : ' id="' + headerId(m1) + '"',
         hLevel = headerLevelStart,
         hashBlock = '<h' + hLevel + hID + '>' + spanGamut + '</h' + hLevel + '>';
-    return showdown.subParser('makehtml.hashBlock')(hashBlock, options, globals);
+    return makehtml_hashBlock(hashBlock, options, globals);
   });
 
   text = text.replace(setextRegexH2, function (matchFound, m1) {
-    var spanGamut = showdown.subParser('makehtml.spanGamut')(m1, options, globals),
+    var spanGamut = makehtml_spanGamut(m1, options, globals),
         hID = (options.noHeaderId) ? '' : ' id="' + headerId(m1) + '"',
         hLevel = headerLevelStart + 1,
         hashBlock = '<h' + hLevel + hID + '>' + spanGamut + '</h' + hLevel + '>';
-    return showdown.subParser('makehtml.hashBlock')(hashBlock, options, globals);
+    return makehtml_hashBlock(hashBlock, options, globals);
   });
 
   // atx-style headers:
@@ -47,12 +52,12 @@ showdown.subParser('makehtml.headers', function (text, options, globals) {
       hText = m2.replace(/\s?\{([^{]+?)}\s*$/, '');
     }
 
-    var span = showdown.subParser('makehtml.spanGamut')(hText, options, globals),
+    var span = makehtml_spanGamut(hText, options, globals),
         hID = (options.noHeaderId) ? '' : ' id="' + headerId(m2) + '"',
         hLevel = headerLevelStart - 1 + m1.length,
         header = '<h' + hLevel + hID + '>' + span + '</h' + hLevel + '>';
 
-    return showdown.subParser('makehtml.hashBlock')(header, options, globals);
+    return makehtml_hashBlock(header, options, globals);
   });
 
   function headerId (m) {
@@ -70,7 +75,7 @@ showdown.subParser('makehtml.headers', function (text, options, globals) {
     title = m;
 
     // Prefix id to prevent causing inadvertent pre-existing style matches.
-    if (showdown.helper.isString(options.prefixHeaderId)) {
+    if (isString(options.prefixHeaderId)) {
       prefix = options.prefixHeaderId;
     } else if (options.prefixHeaderId === true) {
       prefix = 'section-';
@@ -123,4 +128,4 @@ showdown.subParser('makehtml.headers', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.headers.after', text, options, globals).getText();
   return text;
-});
+}

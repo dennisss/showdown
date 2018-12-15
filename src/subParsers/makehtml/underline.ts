@@ -1,4 +1,7 @@
-showdown.subParser('makehtml.underline', function (text, options, globals) {
+import { ConverterOptions, ConverterGlobals } from '../../types';
+import { escapeCharactersCallback } from '../../helpers';
+
+export function makehtml_underline (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (!options.underline) {
@@ -24,9 +27,9 @@ showdown.subParser('makehtml.underline', function (text, options, globals) {
   }
 
   // escape remaining underscores to prevent them being parsed by italic and bold
-  text = text.replace(/(_)/g, showdown.helper.escapeCharactersCallback);
+  text = text.replace(/(_)/g, escapeCharactersCallback);
 
   text = globals.converter._dispatch('makehtml.underline.after', text, options, globals).getText();
 
   return text;
-});
+}

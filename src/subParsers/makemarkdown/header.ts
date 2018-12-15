@@ -1,4 +1,4 @@
-showdown.subParser('makeMarkdown.header', function (node, globals, headerLevel) {
+export function makeMarkdown_header (node, globals, headerLevel) {
   'use strict';
 
   var headerMark = new Array(headerLevel + 1).join('#'),
@@ -10,8 +10,8 @@ showdown.subParser('makeMarkdown.header', function (node, globals, headerLevel) 
         childrenLength = children.length;
 
     for (var i = 0; i < childrenLength; ++i) {
-      txt += showdown.subParser('makeMarkdown.node')(children[i], globals);
+      txt += makeMarkdown_node(children[i], globals);
     }
   }
   return txt;
-});
+}

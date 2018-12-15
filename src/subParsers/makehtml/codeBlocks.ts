@@ -1,7 +1,13 @@
+import { makehtml_outdent } from './outdent';
+import { makehtml_encodeCode } from './encodeCode';
+import { makehtml_detab } from './detab';
+import { makehtml_hashBlock } from './hashBlock';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Process Markdown `<pre><code>` blocks.
  */
-showdown.subParser('makehtml.codeBlocks', function (text, options, globals) {
+export function makehtml_codeBlocks (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.codeBlocks.before', text, options, globals).getText();
@@ -15,9 +21,9 @@ showdown.subParser('makehtml.codeBlocks', function (text, options, globals) {
         nextChar = m2,
         end = '\n';
 
-    codeblock = showdown.subParser('makehtml.outdent')(codeblock, options, globals);
-    codeblock = showdown.subParser('makehtml.encodeCode')(codeblock, options, globals);
-    codeblock = showdown.subParser('makehtml.detab')(codeblock, options, globals);
+    codeblock = makehtml_outdent(codeblock, options, globals);
+    codeblock = makehtml_encodeCode(codeblock, options, globals);
+    codeblock = makehtml_detab(codeblock, options, globals);
     codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
     codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing newlines
 
@@ -27,7 +33,7 @@ showdown.subParser('makehtml.codeBlocks', function (text, options, globals) {
 
     codeblock = '<pre><code>' + codeblock + end + '</code></pre>';
 
-    return showdown.subParser('makehtml.hashBlock')(codeblock, options, globals) + nextChar;
+    return makehtml_hashBlock(codeblock, options, globals) + nextChar;
   });
 
   // strip sentinel
@@ -35,4 +41,4 @@ showdown.subParser('makehtml.codeBlocks', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.codeBlocks.after', text, options, globals).getText();
   return text;
-});
+}

@@ -1,4 +1,9 @@
-showdown.subParser('makehtml.tables', function (text, options, globals) {
+import { ConverterOptions, ConverterGlobals } from '../../types';
+import { makehtml_spanGamut } from './spanGamut';
+import { makehtml_codeSpans } from './codeSpans';
+import { isUndefined, escapeCharactersCallback } from '../../helpers';
+
+export function makehtml_tables (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (!options.tables) {
@@ -28,13 +33,13 @@ showdown.subParser('makehtml.tables', function (text, options, globals) {
     if (options.tablesHeaderId || options.tableHeaderId) {
       id = ' id="' + header.replace(/ /g, '_').toLowerCase() + '"';
     }
-    header = showdown.subParser('makehtml.spanGamut')(header, options, globals);
+    header = makehtml_spanGamut(header, options, globals);
 
     return '<th' + id + style + '>' + header + '</th>\n';
   }
 
   function parseCells (cell, style) {
-    var subText = showdown.subParser('makehtml.spanGamut')(cell, options, globals);
+    var subText = makehtml_spanGamut(cell, options, globals);
     return '<td' + style + '>' + subText + '</td>\n';
   }
 
@@ -71,7 +76,7 @@ showdown.subParser('makehtml.tables', function (text, options, globals) {
       }
       // parse code spans first, but we only support one line code spans
 
-      tableLines[i] = showdown.subParser('makehtml.codeSpans')(tableLines[i], options, globals);
+      tableLines[i] = makehtml_codeSpans(tableLines[i], options, globals);
     }
 
     var rawHeaders = tableLines[0].split('|').map(function (s) { return s.trim();}),
@@ -106,7 +111,7 @@ showdown.subParser('makehtml.tables', function (text, options, globals) {
     }
 
     for (i = 0; i < rawHeaders.length; ++i) {
-      if (showdown.helper.isUndefined(styles[i])) {
+      if (isUndefined(styles[i])) {
         styles[i] = '';
       }
       headers.push(parseHeaders(rawHeaders[i], styles[i]));
@@ -115,7 +120,7 @@ showdown.subParser('makehtml.tables', function (text, options, globals) {
     for (i = 0; i < rawCells.length; ++i) {
       var row = [];
       for (var ii = 0; ii < headers.length; ++ii) {
-        if (showdown.helper.isUndefined(rawCells[i][ii])) {
+        if (isUndefined(rawCells[i][ii])) {
 
         }
         row.push(parseCells(rawCells[i][ii], styles[ii]));
@@ -129,7 +134,7 @@ showdown.subParser('makehtml.tables', function (text, options, globals) {
   text = globals.converter._dispatch('makehtml.tables.before', text, options, globals).getText();
 
   // find escaped pipe characters
-  text = text.replace(/\\(\|)/g, showdown.helper.escapeCharactersCallback);
+  text = text.replace(/\\(\|)/g, escapeCharactersCallback);
 
   // parse multi column tables
   text = text.replace(tableRgx, parseTable);

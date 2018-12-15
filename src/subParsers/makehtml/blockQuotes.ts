@@ -1,4 +1,9 @@
-showdown.subParser('makehtml.blockQuotes', function (text, options, globals) {
+import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
+import { makehtml_blockGamut } from './blockGamut';
+import { makehtml_hashBlock } from './hashBlock';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_blockQuotes (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.blockQuotes.before', text, options, globals).getText();
@@ -21,8 +26,8 @@ showdown.subParser('makehtml.blockQuotes', function (text, options, globals) {
     bq = bq.replace(/¨0/g, '');
 
     bq = bq.replace(/^[ \t]+$/gm, ''); // trim whitespace-only lines
-    bq = showdown.subParser('makehtml.githubCodeBlocks')(bq, options, globals);
-    bq = showdown.subParser('makehtml.blockGamut')(bq, options, globals); // recurse
+    bq = makehtml_githubCodeBlocks(bq, options, globals);
+    bq = makehtml_blockGamut(bq, options, globals); // recurse
 
     bq = bq.replace(/(^|\n)/g, '$1  ');
     // These leading spaces screw with <pre> content, so we need to fix that:
@@ -34,9 +39,9 @@ showdown.subParser('makehtml.blockQuotes', function (text, options, globals) {
       return pre;
     });
 
-    return showdown.subParser('makehtml.hashBlock')('<blockquote>\n' + bq + '\n</blockquote>', options, globals);
+    return makehtml_hashBlock('<blockquote>\n' + bq + '\n</blockquote>', options, globals);
   });
 
   text = globals.converter._dispatch('makehtml.blockQuotes.after', text, options, globals).getText();
   return text;
-});
+}

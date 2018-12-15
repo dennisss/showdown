@@ -1,16 +1,14 @@
+import { Converter } from './converter';
+import { ConverterGlobals, ConverterOptions } from './types';
 /**
  * showdownjs helper functions
  */
-
-if (!showdown.hasOwnProperty('helper')) {
-  showdown.helper = {};
-}
 
 if (typeof this.document === 'undefined' && typeof this.window === 'undefined') {
   var jsdom = require('jsdom');
   this.window = new jsdom.JSDOM('', {}).window; // jshint ignore:line
 }
-showdown.helper.document = this.window.document;
+document = this.window.document;
 
 /**
  * Check if var is string
@@ -18,7 +16,7 @@ showdown.helper.document = this.window.document;
  * @param {string} a
  * @returns {boolean}
  */
-showdown.helper.isString = function (a) {
+export function isString (a: any): a is string {
   'use strict';
   return (typeof a === 'string' || a instanceof String);
 };
@@ -29,7 +27,7 @@ showdown.helper.isString = function (a) {
  * @param {*} a
  * @returns {boolean}
  */
-showdown.helper.isFunction = function (a) {
+export function isFunction (a: any): a is Function {
   'use strict';
   var getType = {};
   return a && getType.toString.call(a) === '[object Function]';
@@ -41,7 +39,7 @@ showdown.helper.isFunction = function (a) {
  * @param {*} a
  * @returns {boolean}
  */
-showdown.helper.isArray = function (a) {
+export function isArray (a: any): a is Array<any> {
   'use strict';
   return Array.isArray(a);
 };
@@ -52,7 +50,7 @@ showdown.helper.isArray = function (a) {
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
  */
-showdown.helper.isUndefined = function (value) {
+export function isUndefined (value: any): value is undefined {
   'use strict';
   return typeof value === 'undefined';
 };
@@ -64,24 +62,26 @@ showdown.helper.isUndefined = function (value) {
  * @param {*} obj
  * @param {function} callback Accepts 3 params: 1. value, 2. key, 3. the original array/object
  */
-showdown.helper.forEach = function (obj, callback) {
+export function forEach<T extends Array<U>, U> (obj: T, callback: (val: U, idx: number, obj: T) => void): void;
+export function forEach<T extends {}, K extends keyof T> (obj: T, callback: (val: T[K], idx: K, obj: T) => void): void;
+export function forEach<T extends Array<any>|object> (obj: T, callback: (val: any, idx: any, obj: T) => void): void {
   'use strict';
   // check if obj is defined
-  if (showdown.helper.isUndefined(obj)) {
+  if (isUndefined(obj)) {
     throw new Error('obj param is required');
   }
 
-  if (showdown.helper.isUndefined(callback)) {
+  if (isUndefined(callback)) {
     throw new Error('callback param is required');
   }
 
-  if (!showdown.helper.isFunction(callback)) {
+  if (!isFunction(callback)) {
     throw new Error('callback param must be a function/closure');
   }
 
   if (typeof obj.forEach === 'function') {
     obj.forEach(callback);
-  } else if (showdown.helper.isArray(obj)) {
+  } else if (isArray(obj)) {
     for (var i = 0; i < obj.length; i++) {
       callback(obj[i], i, obj);
     }
@@ -102,16 +102,10 @@ showdown.helper.forEach = function (obj, callback) {
  * @param {string} s extension name
  * @returns {string}
  */
-showdown.helper.stdExtName = function (s) {
+export function stdExtName (s: string) {
   'use strict';
   return s.replace(/[_?*+\/\\.^-]/g, '').replace(/\s/g, '').toLowerCase();
 };
-
-function escapeCharactersCallback (wholeMatch, m1) {
-  'use strict';
-  var charCodeToEscape = m1.charCodeAt(0);
-  return '¨E' + charCodeToEscape + 'E';
-}
 
 /**
  * Callback used to escape characters when passing through String.replace
@@ -120,7 +114,11 @@ function escapeCharactersCallback (wholeMatch, m1) {
  * @param {string} m1
  * @returns {string}
  */
-showdown.helper.escapeCharactersCallback = escapeCharactersCallback;
+export function escapeCharactersCallback (wholeMatch: string, m1: string) {
+  'use strict';
+  var charCodeToEscape = m1.charCodeAt(0);
+  return '¨E' + charCodeToEscape + 'E';
+}
 
 /**
  * Escape characters in a string
@@ -130,7 +128,7 @@ showdown.helper.escapeCharactersCallback = escapeCharactersCallback;
  * @param {boolean} afterBackslash
  * @returns {XML|string|void|*}
  */
-showdown.helper.escapeCharacters = function (text, charsToEscape, afterBackslash) {
+export function escapeCharacters (text: string, charsToEscape: string, afterBackslash: boolean) {
   'use strict';
   // First we have to escape the escape characters so that
   // we can build a character class out of them
@@ -146,7 +144,7 @@ showdown.helper.escapeCharacters = function (text, charsToEscape, afterBackslash
   return text;
 };
 
-var rgxFindMatchPos = function (str, left, right, flags) {
+function rgxFindMatchPos (str: string, left: string, right: string, flags?: string) {
   'use strict';
   var f = flags || '',
       g = f.indexOf('g') > -1,
@@ -213,7 +211,7 @@ var rgxFindMatchPos = function (str, left, right, flags) {
  * matchRecursiveRegExp("<div id=\"x\">test</div>", "<div\\b[^>]*>", "</div>", "gi")
  * returns: ["test"]
  */
-showdown.helper.matchRecursiveRegExp = function (str, left, right, flags) {
+export function matchRecursiveRegExp (str: string, left: string, right: string, flags?: string) {
   'use strict';
 
   var matchPos = rgxFindMatchPos (str, left, right, flags),
@@ -239,10 +237,10 @@ showdown.helper.matchRecursiveRegExp = function (str, left, right, flags) {
  * @param {string} flags
  * @returns {string}
  */
-showdown.helper.replaceRecursiveRegExp = function (str, replacement, left, right, flags) {
+export function replaceRecursiveRegExp (str: string, replacement: string|((a: string, b: string, c: string, d: string) => string), left: string, right: string, flags?: string) {
   'use strict';
 
-  if (!showdown.helper.isFunction(replacement)) {
+  if (!isFunction(replacement)) {
     var repStr = replacement;
     replacement = function () {
       return repStr;
@@ -289,16 +287,15 @@ showdown.helper.replaceRecursiveRegExp = function (str, replacement, left, right
  * @returns {Number}
  * @throws InvalidArgumentError
  */
-showdown.helper.regexIndexOf = function (str, regex, fromIndex) {
-  'use strict';
-  if (!showdown.helper.isString(str)) {
-    throw 'InvalidArgumentError: first parameter of showdown.helper.regexIndexOf function must be a string';
+export function regexIndexOf (str: string, regex: RegExp, fromIndex: number = 0) {
+  if (!isString(str)) {
+    throw 'InvalidArgumentError: first parameter of regexIndexOf function must be a string';
   }
   if (regex instanceof RegExp === false) {
-    throw 'InvalidArgumentError: second parameter of showdown.helper.regexIndexOf function must be an instance of RegExp';
+    throw 'InvalidArgumentError: second parameter of regexIndexOf function must be an instance of RegExp';
   }
-  var indexOf = str.substring(fromIndex || 0).search(regex);
-  return (indexOf >= 0) ? (indexOf + (fromIndex || 0)) : indexOf;
+  var indexOf = str.substring(fromIndex).search(regex);
+  return (indexOf >= 0) ? (indexOf + (fromIndex)) : indexOf;
 };
 
 /**
@@ -308,10 +305,10 @@ showdown.helper.regexIndexOf = function (str, regex, fromIndex) {
  * @returns {[string,string]}
  * @throws InvalidArgumentError
  */
-showdown.helper.splitAtIndex = function (str, index) {
+export function splitAtIndex(str: string, index: number) {
   'use strict';
-  if (!showdown.helper.isString(str)) {
-    throw 'InvalidArgumentError: first parameter of showdown.helper.regexIndexOf function must be a string';
+  if (!isString(str)) {
+    throw 'InvalidArgumentError: first parameter of regexIndexOf function must be a string';
   }
   return [str.substring(0, index), str.substring(index)];
 };
@@ -325,16 +322,16 @@ showdown.helper.splitAtIndex = function (str, index) {
  * @param {string} mail
  * @returns {string}
  */
-showdown.helper.encodeEmailAddress = function (mail) {
+export function encodeEmailAddress(mail: string) {
   'use strict';
   var encode = [
-    function (ch) {
+    function (ch: string) {
       return '&#' + ch.charCodeAt(0) + ';';
     },
-    function (ch) {
+    function (ch: string) {
       return '&#x' + ch.charCodeAt(0).toString(16) + ';';
     },
-    function (ch) {
+    function (ch: string) {
       return ch;
     }
   ];
@@ -363,7 +360,7 @@ showdown.helper.encodeEmailAddress = function (mail) {
  * @param padString
  * @returns {string}
  */
-showdown.helper.padEnd = function padEnd (str, targetLength, padString) {
+export function padEnd(str: string, targetLength: number, padString?: string) {
   'use strict';
   /*jshint bitwise: false*/
   // eslint-disable-next-line space-infix-ops
@@ -386,7 +383,7 @@ showdown.helper.padEnd = function padEnd (str, targetLength, padString) {
  * @param txt
  * @returns {string}
  */
-showdown.helper.unescapeHTMLEntities = function (txt) {
+export function unescapeHTMLEntities(txt: string) {
   'use strict';
 
   return txt
@@ -396,109 +393,103 @@ showdown.helper.unescapeHTMLEntities = function (txt) {
     .replace(/&amp;/g, '&');
 };
 
-showdown.helper._hashHTMLSpan = function (html, globals) {
+export function _hashHTMLSpan(html: string, globals) {
   return '¨C' + (globals.gHtmlSpans.push(html) - 1) + 'C';
 };
 
-/**
- * Showdown's Event Object
- * @param {string} name Name of the event
- * @param {string} text Text
- * @param {{}} params optional. params of the event
- * @constructor
- */
-showdown.helper.Event = function (name, text, params) {
-  'use strict';
 
-  var regexp = params.regexp || null;
-  var matches = params.matches || {};
-  var options = params.options || {};
-  var converter = params.converter || null;
-  var globals = params.globals || {};
+
+export interface EventParams {
+  regexp?: RegExp;
+  matches?: object;
+  parsedText?: string;
+  converter?: Converter;
+  globals?: ConverterGlobals;
+  options?: ConverterOptions;
+  text?: string; // XXX: 
+}
+
+export class Event {
+  /**
+   * Showdown's Event Object
+   * @param {string} name Name of the event
+   * @param {string} text Text
+   * @param {{}} params optional. params of the event
+   * @constructor
+   */  
+  constructor(private name: string, private text: string, private params: EventParams) {
+
+  }
+
+  private regexp = this.params.regexp || null;
+  private matches = this.params.matches || {};
+  private options = this.params.options || {};
+  private converter = this.params.converter || null;
+  private globals = this.params.globals || {};
 
   /**
    * Get the name of the event
    * @returns {string}
    */
-  this.getName = function () {
-    return name;
-  };
+  getName() {
+    return this.name;
+  }
 
-  this.getEventName = function () {
-    return name;
-  };
+  getEventName() {
+    return this.name;
+  }
 
-  this._stopExecution = false;
+  private _stopExecution = false;
 
-  this.parsedText = params.parsedText || null;
+  private parsedText: string = this.params.parsedText || null;
 
-  this.getRegexp = function () {
-    return regexp;
-  };
+  getRegexp() {
+    return this.regexp;
+  }
 
-  this.getOptions = function () {
-    return options;
-  };
+  getOptions() {
+    return this.options;
+  }
 
-  this.getConverter = function () {
-    return converter;
-  };
+  getConverter() {
+    return this.converter;
+  }
 
-  this.getGlobals = function () {
-    return globals;
-  };
+  getGlobals() {
+    return this.globals;
+  }
 
-  this.getCapturedText = function () {
-    return text;
-  };
+  getCapturedText() {
+    return this.text;
+  }
 
-  this.getText = function () {
-    return text;
-  };
+  getText() {
+    return this.text;
+  }
 
-  this.setText = function (newText) {
-    text = newText;
-  };
+  setText(newText: string) {
+    this.text = newText;
+  }
 
-  this.getMatches = function () {
-    return matches;
-  };
+  getMatches() {
+    return this.matches;
+  }
 
-  this.setMatches = function (newMatches) {
-    matches = newMatches;
-  };
+  setMatches(newMatches: object) {
+    this.matches = newMatches;
+  }
 
-  this.preventDefault = function (bool) {
+  preventDefault(bool: boolean) {
     this._stopExecution = !bool;
-  };
-};
+  }
 
-/**
- * POLYFILLS
- */
-// use this instead of builtin is undefined for IE8 compatibility
-if (typeof(console) === 'undefined') {
-  console = {
-    warn: function (msg) {
-      'use strict';
-      alert(msg);
-    },
-    log: function (msg) {
-      'use strict';
-      alert(msg);
-    },
-    error: function (msg) {
-      'use strict';
-      throw msg;
-    }
-  };
 }
 
 /**
  * Common regexes.
  * We declare some common regexes to improve performance
  */
-showdown.helper.regexes = {
+export const regexes = {
   asteriskDashTildeAndColon: /([*_:~])/g,
   asteriskDashAndTilde:      /([*_~])/g
 };
@@ -506,7 +497,7 @@ showdown.helper.regexes = {
 /**
  * EMOJIS LIST
  */
-showdown.helper.emojis = {
+export const emojis: { [code: string]: string } = {
   '+1':'\ud83d\udc4d',
   '-1':'\ud83d\udc4e',
   '100':'\ud83d\udcaf',

@@ -1,5 +1,5 @@
-showdown.subParser('makeMarkdown.hr', function () {
+export function makeMarkdown_hr () {
   'use strict';
 
   return '---';
-});
+}

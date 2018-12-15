@@ -1,3 +1,7 @@
+import { makehtml_encodeCode } from './encodeCode';
+import { makehtml_hashHTMLSpans } from './hashHTMLSpans';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  *
  *   *  Backtick quotes are used for <code></code> spans.
@@ -23,7 +27,7 @@
  *
  *         ... type <code>`bar`</code> ...
  */
-showdown.subParser('makehtml.codeSpans', function (text, options, globals) {
+export function makehtml_codeSpans (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.codeSpans.before', text, options, globals).getText();
@@ -32,17 +36,17 @@ showdown.subParser('makehtml.codeSpans', function (text, options, globals) {
     text = '';
   }
   text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
-    function (wholeMatch, m1, m2, m3) {
+    function (wholeMatch: string, m1: string, m2: string, m3: string) {
       var c = m3;
       c = c.replace(/^([ \t]*)/g, '');	// leading whitespace
       c = c.replace(/[ \t]*$/g, '');	// trailing whitespace
-      c = showdown.subParser('makehtml.encodeCode')(c, options, globals);
+      c = makehtml_encodeCode(c, options, globals);
       c = m1 + '<code>' + c + '</code>';
-      c = showdown.subParser('makehtml.hashHTMLSpans')(c, options, globals);
+      c = makehtml_hashHTMLSpans(c, options, globals);
       return c;
     }
   );
 
   text = globals.converter._dispatch('makehtml.codeSpans.after', text, options, globals).getText();
   return text;
-});
+}

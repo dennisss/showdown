@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Parse metadata at the top of the document
  */
-showdown.subParser('makehtml.metadata', function (text, options, globals) {
+export function makehtml_metadata (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (!options.metadata) {
@@ -46,4 +48,4 @@ showdown.subParser('makehtml.metadata', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.metadata.after', text, options, globals).getText();
   return text;
-});
+}

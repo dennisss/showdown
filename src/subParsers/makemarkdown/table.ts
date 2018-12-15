@@ -1,4 +1,7 @@
-showdown.subParser('makeMarkdown.table', function (node, globals) {
+import { makeMarkdown_tableCell } from './tableCell';
+import { padEnd } from '../../helpers';
+
+export function makeMarkdown_table (node: Node, globals: any) {
   'use strict';
 
   var txt = '',
@@ -7,7 +10,7 @@ showdown.subParser('makeMarkdown.table', function (node, globals) {
       rows       = node.querySelectorAll('tbody>tr'),
       i, ii;
   for (i = 0; i < headings.length; ++i) {
-    var headContent = showdown.subParser('makeMarkdown.tableCell')(headings[i], globals),
+    var headContent = makeMarkdown_tableCell(headings[i], globals),
         allign = '---';
 
     if (headings[i].hasAttribute('style')) {
@@ -35,7 +38,7 @@ showdown.subParser('makeMarkdown.table', function (node, globals) {
     for (ii = 0; ii < headings.length; ++ii) {
       var cellContent = ' ';
       if (typeof cols[ii] !== 'undefined') {
-        cellContent = showdown.subParser('makeMarkdown.tableCell')(cols[ii], globals);
+        cellContent = makeMarkdown_tableCell(cols[ii], globals);
       }
       tableArray[r].push(cellContent);
     }
@@ -55,16 +58,16 @@ showdown.subParser('makeMarkdown.table', function (node, globals) {
     for (ii = 0; ii < tableArray[i].length; ++ii) {
       if (i === 1) {
         if (tableArray[i][ii].slice(-1) === ':') {
-          tableArray[i][ii] = showdown.helper.padEnd(tableArray[i][ii].slice(-1), cellSpacesCount - 1, '-') + ':';
+          tableArray[i][ii] = padEnd(tableArray[i][ii].slice(-1), cellSpacesCount - 1, '-') + ':';
         } else {
-          tableArray[i][ii] = showdown.helper.padEnd(tableArray[i][ii], cellSpacesCount, '-');
+          tableArray[i][ii] = padEnd(tableArray[i][ii], cellSpacesCount, '-');
         }
       } else {
-        tableArray[i][ii] = showdown.helper.padEnd(tableArray[i][ii], cellSpacesCount);
+        tableArray[i][ii] = padEnd(tableArray[i][ii], cellSpacesCount);
       }
     }
     txt += '| ' + tableArray[i].join(' | ') + ' |\n';
   }
 
   return txt.trim();
-});
+}

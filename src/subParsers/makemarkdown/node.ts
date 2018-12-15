@@ -1,6 +1,20 @@
+import { makeMarkdown_txt } from './txt';
+import { makeMarkdown_blockquote } from './blockquote';
+import { makeMarkdown_pre } from './pre';
+import { makeMarkdown_table } from './table';
+import { makeMarkdown_strong } from './strong';
+import { makeMarkdown_strikethrough } from './strikethrough';
+import { makeMarkdown_header } from './header';
+import { makeMarkdown_paragraph } from './paragraph';
+import { makeMarkdown_hr } from './hr';
+import { makeMarkdown_list } from './list';
+import { makeMarkdown_codeBlock } from './codeBlock';
+import { makeMarkdown_codeSpan } from './codeSpan';
+import { makeMarkdown_emphasis } from './emphasis';
+import { makeMarkdown_links } from './links';
+import { makeMarkdown_image } from './image';
 
-
-showdown.subParser('makeMarkdown.node', function (node, globals, spansOnly) {
+export function makeMarkdown_node (node: Node, globals: any, spansOnly?: boolean) {
   'use strict';
 
   spansOnly = spansOnly || false;
@@ -9,7 +23,7 @@ showdown.subParser('makeMarkdown.node', function (node, globals, spansOnly) {
 
   // edge case of text without wrapper paragraph
   if (node.nodeType === 3) {
-    return showdown.subParser('makeMarkdown.txt')(node, globals);
+    return makeMarkdown_txt(node, globals);
   }
 
   // HTML comment
@@ -30,83 +44,83 @@ showdown.subParser('makeMarkdown.node', function (node, globals, spansOnly) {
     // BLOCKS
     //
     case 'h1':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 1) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 1) + '\n\n'; }
       break;
     case 'h2':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 2) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 2) + '\n\n'; }
       break;
     case 'h3':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 3) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 3) + '\n\n'; }
       break;
     case 'h4':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 4) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 4) + '\n\n'; }
       break;
     case 'h5':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 5) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 5) + '\n\n'; }
       break;
     case 'h6':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.header')(node, globals, 6) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_header(node, globals, 6) + '\n\n'; }
       break;
 
     case 'p':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.paragraph')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_paragraph(node, globals) + '\n\n'; }
       break;
 
     case 'blockquote':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.blockquote')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_blockquote(node, globals) + '\n\n'; }
       break;
 
     case 'hr':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.hr')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_hr(node, globals) + '\n\n'; }
       break;
 
     case 'ol':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.list')(node, globals, 'ol') + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_list(node, globals, 'ol') + '\n\n'; }
       break;
 
     case 'ul':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.list')(node, globals, 'ul') + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_list(node, globals, 'ul') + '\n\n'; }
       break;
 
     case 'precode':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.codeBlock')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_codeBlock(node, globals) + '\n\n'; }
       break;
 
     case 'pre':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.pre')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_pre(node, globals) + '\n\n'; }
       break;
 
     case 'table':
-      if (!spansOnly) { txt = showdown.subParser('makeMarkdown.table')(node, globals) + '\n\n'; }
+      if (!spansOnly) { txt = makeMarkdown_table(node, globals) + '\n\n'; }
       break;
 
     //
     // SPANS
     //
     case 'code':
-      txt = showdown.subParser('makeMarkdown.codeSpan')(node, globals);
+      txt = makeMarkdown_codeSpan(node, globals);
       break;
 
     case 'em':
     case 'i':
-      txt = showdown.subParser('makeMarkdown.emphasis')(node, globals);
+      txt = makeMarkdown_emphasis(node, globals);
       break;
 
     case 'strong':
     case 'b':
-      txt = showdown.subParser('makeMarkdown.strong')(node, globals);
+      txt = makeMarkdown_strong(node, globals);
       break;
 
     case 'del':
-      txt = showdown.subParser('makeMarkdown.strikethrough')(node, globals);
+      txt = makeMarkdown_strikethrough(node, globals);
       break;
 
     case 'a':
-      txt = showdown.subParser('makeMarkdown.links')(node, globals);
+      txt = makeMarkdown_links(node, globals);
       break;
 
     case 'img':
-      txt = showdown.subParser('makeMarkdown.image')(node, globals);
+      txt = makeMarkdown_image(node, globals);
       break;
 
     default:
@@ -117,4 +131,4 @@ showdown.subParser('makeMarkdown.node', function (node, globals, spansOnly) {
   // TODO eventually
 
   return txt;
-});
+}

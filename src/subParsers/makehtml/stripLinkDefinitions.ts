@@ -1,9 +1,12 @@
+import { makehtml_encodeAmpsAndAngles } from './encodeAmpsAndAngles';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Strips link definitions from text, stores the URLs and titles in
  * hash references.
  * Link defs are in the form: ^[id]: url "optional title"
  */
-showdown.subParser('makehtml.stripLinkDefinitions', function (text, options, globals) {
+export function makehtml_stripLinkDefinitions (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   var regex       = /^ {0,3}\[(.+)]:[ \t]*\n?[ \t]*<?([^>\s]+)>?(?: =([*\d]+[A-Za-z%]{0,4})x([*\d]+[A-Za-z%]{0,4}))?[ \t]*\n?[ \t]*(?:(\n*)["|'(](.+?)["|')][ \t]*)?(?:\n+|(?=¨0))/gm,
@@ -18,7 +21,7 @@ showdown.subParser('makehtml.stripLinkDefinitions', function (text, options, glo
       // remove newlines
       globals.gUrls[linkId] = url.replace(/\s/g, '');
     } else {
-      globals.gUrls[linkId] = showdown.subParser('makehtml.encodeAmpsAndAngles')(url, options, globals);  // Link IDs are case-insensitive
+      globals.gUrls[linkId] = makehtml_encodeAmpsAndAngles(url, options, globals);  // Link IDs are case-insensitive
     }
 
     if (blankLines) {

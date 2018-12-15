@@ -1,7 +1,15 @@
+import { makehtml_outdent } from './outdent';
+import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
+import { makehtml_spanGamut } from './spanGamut';
+import { makehtml_blockGamut } from './blockGamut';
+import { makehtml_hashHTMLBlocks } from './hashHTMLBlocks';
+import { makehtml_paragraphs } from './paragraphs';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Form HTML ordered (numbered) and unordered (bulleted) lists.
  */
-showdown.subParser('makehtml.lists', function (text, options, globals) {
+export function makehtml_lists (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   /**
@@ -54,7 +62,7 @@ showdown.subParser('makehtml.lists', function (text, options, globals) {
     listStr = listStr.replace(rgx, function (wholeMatch, m1, m2, m3, m4, taskbtn, checked) {
       checked = (checked && checked.trim() !== '');
 
-      var item = showdown.subParser('makehtml.outdent')(m4, options, globals),
+      var item = makehtml_outdent(m4, options, globals),
           bulletStyle = '';
 
       // Support for github tasklists
@@ -97,22 +105,22 @@ showdown.subParser('makehtml.lists', function (text, options, globals) {
       // m1 - Leading line or
       // Has a double return (multi paragraph)
       if (m1 || (item.search(/\n{2,}/) > -1)) {
-        item = showdown.subParser('makehtml.githubCodeBlocks')(item, options, globals);
-        item = showdown.subParser('makehtml.blockGamut')(item, options, globals);
+        item = makehtml_githubCodeBlocks(item, options, globals);
+        item = makehtml_blockGamut(item, options, globals);
       } else {
 
         // Recursion for sub-lists:
-        item = showdown.subParser('makehtml.lists')(item, options, globals);
+        item = makehtml_lists(item, options, globals);
         item = item.replace(/\n$/, ''); // chomp(item)
-        item = showdown.subParser('makehtml.hashHTMLBlocks')(item, options, globals);
+        item = makehtml_hashHTMLBlocks(item, options, globals);
 
         // Colapse double linebreaks
         item = item.replace(/\n\n+/g, '\n\n');
 
         if (isParagraphed) {
-          item = showdown.subParser('makehtml.paragraphs')(item, options, globals);
+          item = makehtml_paragraphs(item, options, globals);
         } else {
-          item = showdown.subParser('makehtml.spanGamut')(item, options, globals);
+          item = makehtml_spanGamut(item, options, globals);
         }
       }
 
@@ -213,4 +221,4 @@ showdown.subParser('makehtml.lists', function (text, options, globals) {
   text = text.replace(/¨0/, '');
   text = globals.converter._dispatch('makehtml.lists.after', text, options, globals).getText();
   return text;
-});
+}

@@ -1,4 +1,4 @@
-showdown.subParser('makeMarkdown.image', function (node) {
+export function makeMarkdown_image (node) {
   'use strict';
 
   var txt = '';
@@ -15,4 +15,4 @@ showdown.subParser('makeMarkdown.image', function (node) {
     txt += ')';
   }
   return txt;
-});
+}

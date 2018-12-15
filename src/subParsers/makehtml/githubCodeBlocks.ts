@@ -1,3 +1,8 @@
+import { makehtml_encodeCode } from './encodeCode';
+import { makehtml_detab } from './detab';
+import { makehtml_hashBlock } from './hashBlock';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Handle github codeblocks prior to running HashHTML so that
  * HTML contained within the codeblock gets escaped properly
@@ -8,7 +13,7 @@
  *     end
  * ```
  */
-showdown.subParser('makehtml.githubCodeBlocks', function (text, options, globals) {
+export function makehtml_githubCodeBlocks (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   // early exit if option is not enabled
@@ -24,14 +29,14 @@ showdown.subParser('makehtml.githubCodeBlocks', function (text, options, globals
     var end = (options.omitExtraWLInCodeBlocks) ? '' : '\n';
 
     // First parse the github code block
-    codeblock = showdown.subParser('makehtml.encodeCode')(codeblock, options, globals);
-    codeblock = showdown.subParser('makehtml.detab')(codeblock, options, globals);
+    codeblock = makehtml_encodeCode(codeblock, options, globals);
+    codeblock = makehtml_detab(codeblock, options, globals);
     codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
     codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing whitespace
 
     codeblock = '<pre><code' + (language ? ' class="' + language + ' language-' + language + '"' : '') + '>' + codeblock + end + '</code></pre>';
 
-    codeblock = showdown.subParser('makehtml.hashBlock')(codeblock, options, globals);
+    codeblock = makehtml_hashBlock(codeblock, options, globals);
 
     // Since GHCodeblocks can be false positives, we need to
     // store the primitive text and the parsed text in a global var,
@@ -43,4 +48,4 @@ showdown.subParser('makehtml.githubCodeBlocks', function (text, options, globals
   text = text.replace(/¨0/, '');
 
   return globals.converter._dispatch('makehtml.githubCodeBlocks.after', text, options, globals).getText();
-});
+}

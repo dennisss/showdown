@@ -1,7 +1,9 @@
-showdown.subParser('makeMarkdown.txt', function (node) {
+import { unescapeHTMLEntities } from '../../helpers';
+
+export function makeMarkdown_txt (node: Text, globals: any) {
   'use strict';
 
-  var txt = node.nodeValue;
+  var txt = node.nodeValue!;
 
   // multiple spaces are collapsed
   txt = txt.replace(/ +/g, ' ');
@@ -10,7 +12,7 @@ showdown.subParser('makeMarkdown.txt', function (node) {
   txt = txt.replace(/¨NBSP;/g, ' ');
 
   // ", <, > and & should replace escaped html entities
-  txt = showdown.helper.unescapeHTMLEntities(txt);
+  txt = unescapeHTMLEntities(txt);
 
   // escape markdown magic characters
   // emphasis, strong and strikethrough - can appear everywhere
@@ -40,4 +42,4 @@ showdown.subParser('makeMarkdown.txt', function (node) {
   txt = txt.replace(/^ {0,3}\[([\S \t]*?)]:/gm, '\\[$1]:');
 
   return txt;
-});
+}

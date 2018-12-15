@@ -1,7 +1,10 @@
+import { regexes, escapeCharactersCallback, escapeCharacters, isUndefined, isString } from '../../helpers';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Turn Markdown image shortcuts into <img> tags.
  */
-showdown.subParser('makehtml.images', function (text, options, globals) {
+export function makehtml_images (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.images.before', text, options, globals).getText();
@@ -39,12 +42,12 @@ showdown.subParser('makehtml.images', function (text, options, globals) {
       }
       url = '#' + linkId;
 
-      if (!showdown.helper.isUndefined(gUrls[linkId])) {
+      if (!isUndefined(gUrls[linkId])) {
         url = gUrls[linkId];
-        if (!showdown.helper.isUndefined(gTitles[linkId])) {
+        if (!isUndefined(gTitles[linkId])) {
           title = gTitles[linkId];
         }
-        if (!showdown.helper.isUndefined(gDims[linkId])) {
+        if (!isUndefined(gDims[linkId])) {
           width = gDims[linkId].width;
           height = gDims[linkId].height;
         }
@@ -55,17 +58,17 @@ showdown.subParser('makehtml.images', function (text, options, globals) {
 
     altText = altText
       .replace(/"/g, '&quot;')
-    //altText = showdown.helper.escapeCharacters(altText, '*_', false);
-      .replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
-    //url = showdown.helper.escapeCharacters(url, '*_', false);
-    url = url.replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
+    //altText = escapeCharacters(altText, '*_', false);
+      .replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
+    //url = escapeCharacters(url, '*_', false);
+    url = url.replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
     var result = '<img src="' + url + '" alt="' + altText + '"';
 
-    if (title && showdown.helper.isString(title)) {
+    if (title && isString(title)) {
       title = title
         .replace(/"/g, '&quot;')
-      //title = showdown.helper.escapeCharacters(title, '*_', false);
-        .replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
+      //title = escapeCharacters(title, '*_', false);
+        .replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
       result += ' title="' + title + '"';
     }
 
@@ -101,4 +104,4 @@ showdown.subParser('makehtml.images', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.images.after', text, options, globals).getText();
   return text;
-});
+}

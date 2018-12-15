@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Remove one level of line-leading tabs or spaces
  */
-showdown.subParser('makehtml.outdent', function (text, options, globals) {
+export function makehtml_outdent (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.outdent.before', text, options, globals).getText();
 
@@ -14,4 +16,4 @@ showdown.subParser('makehtml.outdent', function (text, options, globals) {
 
   text = globals.converter._dispatch('makehtml.outdent.after', text, options, globals).getText();
   return text;
-});
+}

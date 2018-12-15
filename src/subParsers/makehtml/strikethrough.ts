@@ -1,4 +1,6 @@
-showdown.subParser('makehtml.strikethrough', function (text, options, globals) {
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_strikethrough (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (options.strikethrough) {
@@ -8,4 +10,4 @@ showdown.subParser('makehtml.strikethrough', function (text, options, globals) {
   }
 
   return text;
-});
+}

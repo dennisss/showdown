@@ -1,8 +1,11 @@
+import { escapeCharactersCallback } from '../../helpers';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Within tags -- meaning between < and > -- encode [\ ` * _ ~ =] so they
  * don't conflict with their use in Markdown for code, italics and strong.
  */
-showdown.subParser('makehtml.escapeSpecialCharsWithinTagAttributes', function (text, options, globals) {
+export function makehtml_escapeSpecialCharsWithinTagAttributes (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.escapeSpecialCharsWithinTagAttributes.before', text, options, globals).getText();
 
@@ -13,14 +16,14 @@ showdown.subParser('makehtml.escapeSpecialCharsWithinTagAttributes', function (t
   text = text.replace(tags, function (wholeMatch) {
     return wholeMatch
       .replace(/(.)<\/?code>(?=.)/g, '$1`')
-      .replace(/([\\`*_~=|])/g, showdown.helper.escapeCharactersCallback);
+      .replace(/([\\`*_~=|])/g, escapeCharactersCallback);
   });
 
   text = text.replace(comments, function (wholeMatch) {
     return wholeMatch
-      .replace(/([\\`*_~=|])/g, showdown.helper.escapeCharactersCallback);
+      .replace(/([\\`*_~=|])/g, escapeCharactersCallback);
   });
 
   text = globals.converter._dispatch('makehtml.escapeSpecialCharsWithinTagAttributes.after', text, options, globals).getText();
   return text;
-});
+}

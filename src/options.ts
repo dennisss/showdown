@@ -1,8 +1,10 @@
+import { ShowdownOptions } from './types';
+
 /**
  * Created by Tivie on 13-07-2015.
  */
 
-function getDefaultOpts (simple) {
+export function getDefaultOpts (simple: boolean): ShowdownOptions {
   'use strict';
 
   var defaultOptions = {
@@ -174,10 +176,10 @@ function getDefaultOpts (simple) {
   return ret;
 }
 
-function allOptionsOn () {
+export function allOptionsOn () {
   'use strict';
   var options = getDefaultOpts(true),
-      ret = {};
+      ret: { [K in keyof ShowdownOptions] : boolean } = {};
   for (var opt in options) {
     if (options.hasOwnProperty(opt)) {
       ret[opt] = true;

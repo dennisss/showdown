@@ -1,3 +1,14 @@
+import { isUndefined, regexes, escapeCharactersCallback, encodeEmailAddress, isString, _hashHTMLSpan } from '../../helpers';
+import { makehtml_codeSpans } from './codeSpans';
+import { makehtml_emoji } from './emoji';
+import { makehtml_underline } from './underline';
+import { makehtml_italicsAndBold } from './italicsAndBold';
+import { makehtml_strikethrough } from './strikethrough';
+import { makehtml_ellipsis } from './ellipsis';
+import { makehtml_hashHTMLBlocks } from './hashHTMLBlocks';
+import { makehtml_hashHTMLSpans } from './hashHTMLSpans';
+import { makehtml_unescapeSpecialChars } from './unescapeSpecialChars';
+import { ConverterOptions, ConverterGlobals } from '../../types';
 ////
 // makehtml/links.js
 // Copyright (c) 2018 ShowdownJS
@@ -13,7 +24,7 @@
 // - Estevão Soares dos Santos (Tivie) <https://github.com/tivie>
 ////
 
-(function () {
+//(function () {
   /**
    * Helper function: Wrapper function to pass as second replace parameter
    *
@@ -48,7 +59,7 @@
    * @param {String} title
    * @param {{}} options
    * @param {{}} globals
-   * @returns {showdown.helper.Event|*}
+   * @returns {Event|*}
    */
   function createEvent (rgx, evtName, wholeMatch, text, id, url, title, options, globals) {
     return globals.converter._dispatch(evtName, wholeMatch, options, globals, {
@@ -94,22 +105,22 @@
       }
       url = '#' + id;
 
-      if (!showdown.helper.isUndefined(globals.gUrls[id])) {
+      if (!isUndefined(globals.gUrls[id])) {
         url = globals.gUrls[id];
-        if (!showdown.helper.isUndefined(globals.gTitles[id])) {
+        if (!isUndefined(globals.gTitles[id])) {
           title = globals.gTitles[id];
         }
       } else {
         return wholeMatch;
       }
     }
-    //url = showdown.helper.escapeCharacters(url, '*_:~', false); // replaced line to improve performance
-    url = url.replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
+    //url = escapeCharacters(url, '*_:~', false); // replaced line to improve performance
+    url = url.replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
 
     if (title !== '' && title !== null) {
       title = title.replace(/"/g, '&quot;');
-      //title = showdown.helper.escapeCharacters(title, '*_', false); // replaced line to improve performance
-      title = title.replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
+      //title = escapeCharacters(title, '*_', false); // replaced line to improve performance
+      title = title.replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
       title = ' title="' + title + '"';
     }
 
@@ -121,13 +132,13 @@
     }
 
     // Text can be a markdown element, so we run through the appropriate parsers
-    text = showdown.subParser('makehtml.codeSpans')(text, options, globals);
-    text = showdown.subParser('makehtml.emoji')(text, options, globals);
-    text = showdown.subParser('makehtml.underline')(text, options, globals);
-    text = showdown.subParser('makehtml.italicsAndBold')(text, options, globals);
-    text = showdown.subParser('makehtml.strikethrough')(text, options, globals);
-    text = showdown.subParser('makehtml.ellipsis')(text, options, globals);
-    text = showdown.subParser('makehtml.hashHTMLSpans')(text, options, globals);
+    text = makehtml_codeSpans(text, options, globals);
+    text = makehtml_emoji(text, options, globals);
+    text = makehtml_underline(text, options, globals);
+    text = makehtml_italicsAndBold(text, options, globals);
+    text = makehtml_strikethrough(text, options, globals);
+    text = makehtml_ellipsis(text, options, globals);
+    text = makehtml_hashHTMLBlocks(text, options, globals);
 
     //evt = createEvent(rgx, evtRootName + '.captureEnd', wholeMatch, text, id, url, title, options, globals);
 
@@ -135,7 +146,7 @@
 
     //evt = createEvent(rgx, evtRootName + '.beforeHash', wholeMatch, text, id, url, title, options, globals);
 
-    result = showdown.subParser('makehtml.hashHTMLSpans')(result, options, globals);
+    result = makehtml_hashHTMLSpans(result, options, globals);
 
     return result;
   }
@@ -145,47 +156,47 @@
   /**
    * Turn Markdown link shortcuts into XHTML <a> tags.
    */
-  showdown.subParser('makehtml.links', function (text, options, globals) {
+  export function makehtml_links (text: string, options: ConverterOptions, globals: ConverterGlobals) {
 
     text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
 
     // 1. Handle reference-style links: [link text] [id]
-    text = showdown.subParser('makehtml.links.reference')(text, options, globals);
+    text = makehtml_links_reference(text, options, globals);
 
     // 2. Handle inline-style links: [link text](url "optional title")
-    text = showdown.subParser('makehtml.links.inline')(text, options, globals);
+    text = makehtml_links_inline(text, options, globals);
 
     // 3. Handle reference-style shortcuts: [link text]
     // These must come last in case there's a [link text][1] or [link text](/foo)
-    text = showdown.subParser('makehtml.links.referenceShortcut')(text, options, globals);
+    text = makehtml_links_referenceShortcut(text, options, globals);
 
     // 4. Handle angle brackets links -> `<http://example.com/>`
     // Must come after links, because you can use < and > delimiters in inline links like [this](<url>).
-    text = showdown.subParser('makehtml.links.angleBrackets')(text, options, globals);
+    text = makehtml_links_angleBrackets(text, options, globals);
 
     // 5. Handle GithubMentions (if option is enabled)
-    text = showdown.subParser('makehtml.links.ghMentions')(text, options, globals);
+    text = makehtml_links_ghMentions(text, options, globals);
 
     // 6. Handle <a> tags and img tags
     text = text.replace(/<a\s[^>]*>[\s\S]*<\/a>/g, function (wholeMatch) {
-      return showdown.helper._hashHTMLSpan(wholeMatch, globals);
+      return _hashHTMLSpan(wholeMatch, globals);
     });
 
     text = text.replace(/<img\s[^>]*\/?>/g, function (wholeMatch) {
-      return showdown.helper._hashHTMLSpan(wholeMatch, globals);
+      return _hashHTMLSpan(wholeMatch, globals);
     });
 
     // 7. Handle naked links (if option is enabled)
-    text = showdown.subParser('makehtml.links.naked')(text, options, globals);
+    text = makehtml_links_naked(text, options, globals);
 
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
     return text;
-  });
+  }
 
   /**
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.inline', function (text, options, globals) {
+  export function makehtml_links_inline (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     var evtRootName = evtRootName + '.inline';
 
     text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
@@ -211,12 +222,12 @@
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
 
     return text;
-  });
+  }
 
   /**
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.reference', function (text, options, globals) {
+  export function makehtml_links_reference (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     var evtRootName = evtRootName + '.reference';
 
     text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
@@ -227,12 +238,12 @@
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
 
     return text;
-  });
+  }
 
   /**
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.referenceShortcut', function (text, options, globals) {
+  export function makehtml_links_referenceShortcut (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     var evtRootName = evtRootName + '.referenceShortcut';
 
     text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
@@ -243,12 +254,12 @@
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
 
     return text;
-  });
+  }
 
   /**
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.ghMentions', function (text, options, globals) {
+  export function makehtml_links_ghMentions (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     var evtRootName = evtRootName + 'ghMentions';
 
     if (!options.ghMentions) {
@@ -267,7 +278,7 @@
 
       // check if options.ghMentionsLink is a string
       // TODO Validation should be done at initialization not at runtime
-      if (!showdown.helper.isString(options.ghMentionsLink)) {
+      if (!isString(options.ghMentionsLink)) {
         throw new Error('ghMentionsLink option must be a string');
       }
       var url = options.ghMentionsLink.replace(/{u}/g, username);
@@ -279,12 +290,12 @@
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
 
     return text;
-  });
+  }
 
   /**
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.angleBrackets', function (text, options, globals) {
+  export function makehtml_links_angleBrackets (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     var evtRootName = 'makehtml.links.angleBrackets';
 
     text = globals.converter._dispatch(evtRootName + '.start', text, options, globals).getText();
@@ -302,10 +313,10 @@
     var mailRgx = /<(?:mailto:)?([-.\w]+@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi;
     text = text.replace(mailRgx, function (wholeMatch, mail) {
       var url = 'mailto:';
-      mail = showdown.subParser('makehtml.unescapeSpecialChars')(mail, options, globals);
+      mail = makehtml_unescapeSpecialChars(mail, options, globals);
       if (options.encodeEmails) {
-        url = showdown.helper.encodeEmailAddress(url + mail);
-        mail = showdown.helper.encodeEmailAddress(mail);
+        url = encodeEmailAddress(url + mail);
+        mail = encodeEmailAddress(mail);
       } else {
         url = url + mail;
       }
@@ -315,13 +326,13 @@
 
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
     return text;
-  });
+  }
 
   /**
    * TODO MAKE THIS WORK (IT'S NOT ACTIVATED)
    * TODO WRITE THIS DOCUMENTATION
    */
-  showdown.subParser('makehtml.links.naked', function (text, options, globals) {
+  export function makehtml_links_naked (text: string, options: ConverterOptions, globals: ConverterGlobals) {
     if (!options.simplifiedAutoLink) {
       return text;
     }
@@ -387,7 +398,7 @@
 
       // url part is done so let's take care of text now
       // we need to escape the text (because of links such as www.example.com/foo__bar__baz)
-      text = text.replace(showdown.helper.regexes.asteriskDashTildeAndColon, showdown.helper.escapeCharactersCallback);
+      text = text.replace(regexes.asteriskDashTildeAndColon, escapeCharactersCallback);
 
       // finally we dispatch the event
       var evt = createEvent(urlRgx, evtRootName + '.captureStart', wholeMatch, text, null, url, null, options, globals);
@@ -401,10 +412,10 @@
     var mailRgx = /(^|\s)(?:mailto:)?([A-Za-z0-9!#$%&'*+-/=?^_`{|}~.]+@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)(?=$|\s)/gmi;
     text = text.replace(mailRgx, function (wholeMatch, leadingChar, mail) {
       var url = 'mailto:';
-      mail = showdown.subParser('makehtml.unescapeSpecialChars')(mail, options, globals);
+      mail = makehtml_unescapeSpecialChars(mail, options, globals);
       if (options.encodeEmails) {
-        url = showdown.helper.encodeEmailAddress(url + mail);
-        mail = showdown.helper.encodeEmailAddress(mail);
+        url = encodeEmailAddress(url + mail);
+        mail = encodeEmailAddress(mail);
       } else {
         url = url + mail;
       }
@@ -415,5 +426,6 @@
 
     text = globals.converter._dispatch(evtRootName + '.end', text, options, globals).getText();
     return text;
-  });
-})();
+  }
+
+//})();

@@ -1,4 +1,6 @@
-showdown.subParser('makehtml.italicsAndBold', function (text, options, globals) {
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_italicsAndBold (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.italicsAndBold.before', text, options, globals).getText();
@@ -7,7 +9,7 @@ showdown.subParser('makehtml.italicsAndBold', function (text, options, globals) 
   // because of backtracing, in some cases, it could lead to an exponential effect
   // called "catastrophic backtrace". Ominous!
 
-  function parseInside (txt, left, right) {
+  function parseInside (txt: string, left: string, right: string) {
     return left + txt + right;
   }
 
@@ -63,4 +65,4 @@ showdown.subParser('makehtml.italicsAndBold', function (text, options, globals) 
 
   text = globals.converter._dispatch('makehtml.italicsAndBold.after', text, options, globals).getText();
   return text;
-});
+}

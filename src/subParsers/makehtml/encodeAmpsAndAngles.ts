@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Smart processing for ampersands and angle brackets that need to be encoded.
  */
-showdown.subParser('makehtml.encodeAmpsAndAngles', function (text, options, globals) {
+export function makehtml_encodeAmpsAndAngles (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.encodeAmpsAndAngles.before', text, options, globals).getText();
 
@@ -20,4 +22,4 @@ showdown.subParser('makehtml.encodeAmpsAndAngles', function (text, options, glob
 
   text = globals.converter._dispatch('makehtml.encodeAmpsAndAngles.after', text, options, globals).getText();
   return text;
-});
+}

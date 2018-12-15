@@ -1,7 +1,11 @@
+import { makehtml_spanGamut } from './spanGamut';
+import { makehtml_encodeCode } from './encodeCode';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  *
  */
-showdown.subParser('makehtml.paragraphs', function (text, options, globals) {
+export function makehtml_paragraphs (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   text = globals.converter._dispatch('makehtml.paragraphs.before', text, options, globals).getText();
@@ -22,7 +26,7 @@ showdown.subParser('makehtml.paragraphs', function (text, options, globals) {
     // test for presence of characters to prevent empty lines being parsed
     // as paragraphs (resulting in undesired extra empty paragraphs)
     } else if (str.search(/\S/) >= 0) {
-      str = showdown.subParser('makehtml.spanGamut')(str, options, globals);
+      str = makehtml_spanGamut(str, options, globals);
       str = str.replace(/^([ \t]*)/g, '<p>');
       str += '</p>';
       grafsOut.push(str);
@@ -47,7 +51,7 @@ showdown.subParser('makehtml.paragraphs', function (text, options, globals) {
         // we need to check if ghBlock is a false positive
         if (codeFlag) {
           // use encoded version of all text
-          blockText = showdown.subParser('makehtml.encodeCode')(globals.ghCodeBlocks[num].text, options, globals);
+          blockText = makehtml_encodeCode(globals.ghCodeBlocks[num].text, options, globals);
         } else {
           blockText = globals.ghCodeBlocks[num].codeblock;
         }
@@ -67,4 +71,4 @@ showdown.subParser('makehtml.paragraphs', function (text, options, globals) {
   text = text.replace(/^\n+/g, '');
   text = text.replace(/\n+$/g, '');
   return globals.converter._dispatch('makehtml.paragraphs.after', text, options, globals).getText();
-});
+}

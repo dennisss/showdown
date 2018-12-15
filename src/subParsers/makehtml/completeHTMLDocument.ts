@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Create a full HTML document from the processed markdown
  */
-showdown.subParser('makehtml.completeHTMLDocument', function (text, options, globals) {
+export function makehtml_completeHTMLDocument (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (!options.completeHTMLDocument) {
@@ -59,4 +61,4 @@ showdown.subParser('makehtml.completeHTMLDocument', function (text, options, glo
 
   text = globals.converter._dispatch('makehtml.completeHTMLDocument.after', text, options, globals).getText();
   return text;
-});
+}

@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Run extension
  */
-showdown.subParser('makehtml.runExtension', function (ext, text, options, globals) {
+export function makehtml_runExtension (ext, text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
   if (ext.filter) {
@@ -17,4 +19,4 @@ showdown.subParser('makehtml.runExtension', function (ext, text, options, global
   }
 
   return text;
-});
+}

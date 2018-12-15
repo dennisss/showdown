@@ -1,4 +1,7 @@
-showdown.subParser('makeMarkdown.blockquote', function (node, globals) {
+import { makeMarkdown_node } from './node';
+
+
+export function makeMarkdown_blockquote (node: Node, globals: any): string {
   'use strict';
 
   var txt = '';
@@ -7,7 +10,7 @@ showdown.subParser('makeMarkdown.blockquote', function (node, globals) {
         childrenLength = children.length;
 
     for (var i = 0; i < childrenLength; ++i) {
-      var innerTxt = showdown.subParser('makeMarkdown.node')(children[i], globals);
+      var innerTxt = makeMarkdown_node(children[i], globals);
 
       if (innerTxt === '') {
         continue;
@@ -19,4 +22,4 @@ showdown.subParser('makeMarkdown.blockquote', function (node, globals) {
   txt = txt.trim();
   txt = '> ' + txt.split('\n').join('\n> ');
   return txt;
-});
+};

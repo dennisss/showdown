@@ -1,7 +1,9 @@
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
 /**
  * Swap back in all the special characters we've hidden.
  */
-showdown.subParser('makehtml.unescapeSpecialChars', function (text, options, globals) {
+export function makehtml_unescapeSpecialChars (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.unescapeSpecialChars.before', text, options, globals).getText();
 
@@ -12,4 +14,4 @@ showdown.subParser('makehtml.unescapeSpecialChars', function (text, options, glo
 
   text = globals.converter._dispatch('makehtml.unescapeSpecialChars.after', text, options, globals).getText();
   return text;
-});
+}

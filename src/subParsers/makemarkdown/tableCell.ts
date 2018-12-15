@@ -1,4 +1,6 @@
-showdown.subParser('makeMarkdown.tableCell', function (node, globals) {
+import { makeMarkdown_node } from './node';
+
+export function makeMarkdown_tableCell (node: Node, globals: any) {
   'use strict';
 
   var txt = '';
@@ -9,7 +11,7 @@ showdown.subParser('makeMarkdown.tableCell', function (node, globals) {
       childrenLength = children.length;
 
   for (var i = 0; i < childrenLength; ++i) {
-    txt += showdown.subParser('makeMarkdown.node')(children[i], globals, true);
+    txt += makeMarkdown_node(children[i], globals, true);
   }
   return txt.trim();
-});
+}

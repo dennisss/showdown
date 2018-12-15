@@ -1,4 +1,4 @@
-showdown.subParser('makeMarkdown.list', function (node, globals, type) {
+export function makeMarkdown_list (node, globals, type) {
   'use strict';
 
   var txt = '';
@@ -23,9 +23,9 @@ showdown.subParser('makeMarkdown.list', function (node, globals, type) {
     }
 
     // parse list item
-    txt += bullet + showdown.subParser('makeMarkdown.listItem')(listItems[i], globals);
+    txt += bullet + makeMarkdown_listItem(listItems[i], globals);
     ++listNum;
   }
 
   return txt.trim();
-});
+}

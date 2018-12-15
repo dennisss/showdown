@@ -1,7 +1,9 @@
-showdown.subParser('makehtml.hashElement', function (text, options, globals) {
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_hashElement (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
 
-  return function (wholeMatch, m1) {
+  return function (wholeMatch: string, m1: string) {
     var blockText = m1;
 
     // Undo double lines
@@ -16,4 +18,4 @@ showdown.subParser('makehtml.hashElement', function (text, options, globals) {
 
     return blockText;
   };
-});
+}

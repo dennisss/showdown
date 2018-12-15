@@ -1,4 +1,6 @@
-showdown.subParser('makeMarkdown.strikethrough', function (node, globals) {
+import { makeMarkdown_node } from './node';
+
+export function makeMarkdown_strikethrough (node: Node, globals: any) {
   'use strict';
 
   var txt = '';
@@ -7,9 +9,9 @@ showdown.subParser('makeMarkdown.strikethrough', function (node, globals) {
     var children = node.childNodes,
         childrenLength = children.length;
     for (var i = 0; i < childrenLength; ++i) {
-      txt += showdown.subParser('makeMarkdown.node')(children[i], globals);
+      txt += makeMarkdown_node(children[i], globals);
     }
     txt += '~~';
   }
   return txt;
-});
+}

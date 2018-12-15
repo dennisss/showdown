@@ -1,4 +1,4 @@
-showdown.subParser('makeMarkdown.links', function (node, globals) {
+export function makeMarkdown_links (node, globals) {
   'use strict';
 
   var txt = '';
@@ -7,7 +7,7 @@ showdown.subParser('makeMarkdown.links', function (node, globals) {
         childrenLength = children.length;
     txt = '[';
     for (var i = 0; i < childrenLength; ++i) {
-      txt += showdown.subParser('makeMarkdown.node')(children[i], globals);
+      txt += makeMarkdown_node(children[i], globals);
     }
     txt += '](';
     txt += '<' + node.getAttribute('href') + '>';
@@ -17,4 +17,4 @@ showdown.subParser('makeMarkdown.links', function (node, globals) {
     txt += ')';
   }
   return txt;
-});
+}

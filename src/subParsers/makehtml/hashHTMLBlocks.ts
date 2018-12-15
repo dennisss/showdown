@@ -1,4 +1,8 @@
-showdown.subParser('makehtml.hashHTMLBlocks', function (text, options, globals) {
+import { splitAtIndex, replaceRecursiveRegExp, regexIndexOf } from '../../helpers';
+import { makehtml_hashElement } from './hashElement';
+import { ConverterOptions, ConverterGlobals } from '../../types';
+
+export function makehtml_hashHTMLBlocks (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
   text = globals.converter._dispatch('makehtml.hashHTMLBlocks.before', text, options, globals).getText();
 
@@ -63,15 +67,15 @@ showdown.subParser('makehtml.hashHTMLBlocks', function (text, options, globals) 
         patLeft  = '<' + blockTags[i] + '\\b[^>]*>',
         patRight = '</' + blockTags[i] + '>';
     // 1. Look for the first position of the first opening HTML tag in the text
-    while ((opTagPos = showdown.helper.regexIndexOf(text, rgx1)) !== -1) {
+    while ((opTagPos = regexIndexOf(text, rgx1)) !== -1) {
 
       // if the HTML tag is \ escaped, we need to escape it and break
 
 
       //2. Split the text in that position
-      var subTexts = showdown.helper.splitAtIndex(text, opTagPos),
+      var subTexts = splitAtIndex(text, opTagPos),
       //3. Match recursively
-          newSubText1 = showdown.helper.replaceRecursiveRegExp(subTexts[1], repFunc, patLeft, patRight, 'im');
+          newSubText1 = replaceRecursiveRegExp(subTexts[1], repFunc, patLeft, patRight, 'im');
 
       // prevent an infinite loop
       if (newSubText1 === subTexts[1]) {
@@ -82,17 +86,17 @@ showdown.subParser('makehtml.hashHTMLBlocks', function (text, options, globals) 
   }
   // HR SPECIAL CASE
   text = text.replace(/(\n {0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,
-    showdown.subParser('makehtml.hashElement')(text, options, globals));
+    makehtml_hashElement(text, options, globals));
 
   // Special case for standalone HTML comments
-  text = showdown.helper.replaceRecursiveRegExp(text, function (txt) {
+  text = replaceRecursiveRegExp(text, function (txt) {
     return '\n\n¨K' + (globals.gHtmlBlocks.push(txt) - 1) + 'K\n\n';
   }, '^ {0,3}<!--', '-->', 'gm');
 
   // PHP and ASP-style processor instructions (<?...?> and <%...%>)
   text = text.replace(/(?:\n\n)( {0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,
-    showdown.subParser('makehtml.hashElement')(text, options, globals));
+    makehtml_hashElement(text, options, globals));
 
   text = globals.converter._dispatch('makehtml.hashHTMLBlocks.after', text, options, globals).getText();
   return text;
-});
+}
