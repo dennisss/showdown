@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
 		"moduleResolution": "node",
-		"target": "es5",
-		"lib": [ "es5", "es6", "dom" ],
+		"target": "es3",
 		"noImplicitAny": true,
 		"strict": true,
 		"importHelpers": true,

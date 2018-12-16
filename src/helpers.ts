@@ -139,32 +139,52 @@ export function escapeCharacters (text: string, charsToEscape: string, afterBack
   return text;
 }
 
+interface MatchPos {
+  left: { start: number; end: number; };
+  match: { start: number; end: number; };
+  right: { start: number; end: number; };
+  wholeMatch: { start: number; end: number; };
+}
+
+interface MatchState {
+  t: number;
+  s: number;
+  start: number;
+}
+
 function rgxFindMatchPos (str: string, left: string, right: string, flags?: string) {
   'use strict';
   var f = flags || '',
       g = f.indexOf('g') > -1,
       x = new RegExp(left + '|' + right, 'g' + f.replace(/g/g, '')),
       l = new RegExp(left, f.replace(/g/g, '')),
-      pos = [],
-      t, s, m, start, end;
+      pos: MatchPos[] = [],
+      ms: MatchState|undefined,
+      m: RegExpExecArray|null,
+      end: number|undefined;
 
   do {
-    t = 0;
+    ms = undefined;
     while ((m = x.exec(str))) {
       if (l.test(m[0])) {
-        if (!(t++)) {
-          s = x.lastIndex;
-          start = s - m[0].length;
+        if (!ms) {
+          let s = x.lastIndex;
+          let start = s - m[0].length;
+          ms = { t: 1, s, start };
+        } else {
+          ms.t++;
         }
-      } else if (t) {
-        if (!--t) {
+      } else if (ms) {
+        --ms.t;
+        if (!ms.t) {
           end = m.index + m[0].length;
           var obj = {
-            left: {start: start, end: s},
-            match: {start: s, end: m.index},
+            left: {start: ms.start, end: ms.s},
+            match: {start: ms.s!, end: m.index},
             right: {start: m.index, end: end},
-            wholeMatch: {start: start, end: end}
+            wholeMatch: {start: ms.start, end: end}
           };
+          ms = undefined;
           pos.push(obj);
           if (!g) {
             return pos;
@@ -172,10 +192,11 @@ function rgxFindMatchPos (str: string, left: string, right: string, flags?: stri
         }
       }
     }
-  } while (t && (s !== undefined ? (x.lastIndex = s) : false));
+  } while (ms && (x.lastIndex = ms.s));
 
   return pos;
 }
+
 
 /**
  * matchRecursiveRegExp
@@ -348,8 +369,54 @@ export function encodeEmailAddress (mail: string) {
   return mail;
 }
 
+/* tslint:disable */
 /**
- *
+ * String.prototype.repeat polyfill
+ * 
+ * @param str
+ * @param count
+ * @returns {string}
+ */
+export function repeat (str: string, count: number) {
+  'use strict';
+  if (str == null) {
+    throw new TypeError('can\'t convert ' + str + ' to object');
+  }
+  str = '' + str;
+  // To convert string to integer.
+  count = +count;
+  if (count != count) {
+    count = 0;
+  }
+  if (count < 0) {
+    throw new RangeError('repeat count must be non-negative');
+  }
+  if (count == Infinity) {
+    throw new RangeError('repeat count must be less than infinity');
+  }
+  count = Math.floor(count);
+  if (str.length == 0 || count == 0) {
+    return '';
+  }
+  // Ensuring count is a 31-bit integer allows us to heavily optimize the
+  // main part. But anyway, most current (August 2014) browsers can't handle
+  // strings 1 << 28 chars or longer, so:
+  if (str.length * count >= 1 << 28) {
+    throw new RangeError('repeat count must not overflow maximum string size');
+  }
+  var maxCount = str.length * count;
+  count = Math.floor(Math.log(count) / Math.log(2));
+  while (count) {
+      str += str;
+      count--;
+  }
+  str += str.substring(0, maxCount - str.length);
+  return str;
+}
+
+/**
+ * String.prototype.padEnd polyfill
+ * 
  * @param str
  * @param targetLength
  * @param padString
@@ -357,7 +424,6 @@ export function encodeEmailAddress (mail: string) {
  */
 export function padEnd (str: string, targetLength: number, padString?: string) {
   'use strict';
-  // tslint:disable-next-line
   targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
   padString = String(padString || ' ');
   if (str.length > targetLength) {
@@ -365,11 +431,12 @@ export function padEnd (str: string, targetLength: number, padString?: string) {
   } else {
     targetLength = targetLength - str.length;
     if (targetLength > padString.length) {
-      padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+      padString += repeat(padString, targetLength / padString.length); //append to original to ensure we are longer than needed
     }
     return String(str) + padString.slice(0, targetLength);
   }
 }
+/* tslint:enable */
 
 /**
  * Unescape HTML entities

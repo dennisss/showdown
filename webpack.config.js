@@ -7,14 +7,14 @@ const grunt = require('grunt');
 module.exports = {
   mode: 'production',
   entry: {
-    'showdown': './src/index.ts',
-    'showdown.min': './src/index.ts'
+    [pkg.name]: './src/index.ts',
+    [`${pkg.name}.min`]: './src/index.ts'
   },
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    library: 'showdown',
+    library: pkg.name,
     libraryTarget: 'umd',
     libraryExport: 'default',
     globalObject: "(typeof window !== 'undefined' ? window : this)",

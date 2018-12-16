@@ -184,8 +184,8 @@ module.exports = function (grunt) {
   grunt.registerTask('test-functional', ['shell:test', 'simplemocha:functional', 'clean']);
   grunt.registerTask('test-unit', ['shell:test', 'simplemocha:unit', 'clean']);
   grunt.registerTask('performance', ['shell:test', 'performancejs', 'clean']);
-  grunt.registerTask('build', ['test', 'shell:dist', 'uglify', 'endline']);
-  grunt.registerTask('build-without-test', ['shell:dist', 'uglify', 'endline']);
+  grunt.registerTask('build', ['test', 'shell:dist', 'endline']);
+  grunt.registerTask('build-without-test', ['shell:dist', 'endline']);
   grunt.registerTask('prep-release', ['build', 'generate-changelog']);
 
   // Default task(s).
