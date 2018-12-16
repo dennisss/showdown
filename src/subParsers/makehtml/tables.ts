@@ -1,7 +1,7 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
-import { makehtml_spanGamut } from './spanGamut';
+import { escapeCharactersCallback, isUndefined } from '../../helpers';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_codeSpans } from './codeSpans';
-import { isUndefined, escapeCharactersCallback } from '../../helpers';
+import { makehtml_spanGamut } from './spanGamut';
 
 export function makehtml_tables (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
@@ -79,8 +79,8 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
       tableLines[i] = makehtml_codeSpans(tableLines[i], options, globals);
     }
 
-    var rawHeaders = tableLines[0].split('|').map(function (s) { return s.trim();}),
-        rawStyles = tableLines[1].split('|').map(function (s) { return s.trim();}),
+    var rawHeaders = tableLines[0].split('|').map(function (s) { return s.trim(); }),
+        rawStyles = tableLines[1].split('|').map(function (s) { return s.trim(); }),
         rawCells = [],
         headers = [],
         styles = [],
@@ -121,7 +121,7 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
       var row = [];
       for (var ii = 0; ii < headers.length; ++ii) {
         if (isUndefined(rawCells[i][ii])) {
-
+          // TODO
         }
         row.push(parseCells(rawCells[i][ii], styles[ii]));
       }

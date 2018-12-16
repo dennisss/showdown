@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Parse metadata at the top of the document

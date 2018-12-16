@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Remove one level of line-leading tabs or spaces

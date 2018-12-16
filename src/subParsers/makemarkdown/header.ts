@@ -1,5 +1,5 @@
-import { makeMarkdown_node } from './node';
 import { ConverterGlobals } from '../../types';
+import { makeMarkdown_node } from './node';
 
 export function makeMarkdown_header (node: Element, globals: ConverterGlobals, headerLevel: number) {
   'use strict';

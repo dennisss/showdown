@@ -1,7 +1,7 @@
-import { makehtml_encodeCode } from './encodeCode';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_detab } from './detab';
+import { makehtml_encodeCode } from './encodeCode';
 import { makehtml_hashBlock } from './hashBlock';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 /**
  * Handle github codeblocks prior to running HashHTML so that

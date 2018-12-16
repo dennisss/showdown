@@ -1,20 +1,20 @@
-import { Event, forEach, isString, stdExtName, isUndefined, isArray, unescapeHTMLEntities, EventParams } from './helpers';
-import { makehtml_detab } from "./subParsers/makehtml/detab";
-import { makehtml_runExtension } from "./subParsers/makehtml/runExtension";
-import { makehtml_metadata } from "./subParsers/makehtml/metadata";
-import { makehtml_hashPreCodeTags } from "./subParsers/makehtml/hashPreCodeTags";
-import { makehtml_githubCodeBlocks } from "./subParsers/makehtml/githubCodeBlocks";
-import { makehtml_hashHTMLBlocks } from "./subParsers/makehtml/hashHTMLBlocks";
-import { makehtml_hashCodeTags } from "./subParsers/makehtml/hashCodeTags";
-import { makehtml_stripLinkDefinitions } from "./subParsers/makehtml/stripLinkDefinitions";
-import { makehtml_blockGamut } from "./subParsers/makehtml/blockGamut";
-import { makehtml_unhashHTMLSpans } from "./subParsers/makehtml/hashHTMLSpans";
-import { makehtml_unescapeSpecialChars } from "./subParsers/makehtml/unescapeSpecialChars";
-import { makehtml_completeHTMLDocument } from "./subParsers/makehtml/completeHTMLDocument";
-import { ConverterOptions, ShowdownOptions, ShowdownExtension, ConverterGlobals, Optional } from './types';
-import { makeMarkdown_node } from './subParsers/makemarkdown/node';
-import { privateGlobals, validate, showdown } from './showdown';
+import { Event, EventParams, forEach, isArray, isString, isUndefined, stdExtName, unescapeHTMLEntities } from './helpers';
 import { isText } from './node_helpers';
+import { privateGlobals, showdown, validate } from './showdown';
+import { makehtml_blockGamut } from './subParsers/makehtml/blockGamut';
+import { makehtml_completeHTMLDocument } from './subParsers/makehtml/completeHTMLDocument';
+import { makehtml_detab } from './subParsers/makehtml/detab';
+import { makehtml_githubCodeBlocks } from './subParsers/makehtml/githubCodeBlocks';
+import { makehtml_hashCodeTags } from './subParsers/makehtml/hashCodeTags';
+import { makehtml_hashHTMLBlocks } from './subParsers/makehtml/hashHTMLBlocks';
+import { makehtml_unhashHTMLSpans } from './subParsers/makehtml/hashHTMLSpans';
+import { makehtml_hashPreCodeTags } from './subParsers/makehtml/hashPreCodeTags';
+import { makehtml_metadata } from './subParsers/makehtml/metadata';
+import { makehtml_runExtension } from './subParsers/makehtml/runExtension';
+import { makehtml_stripLinkDefinitions } from './subParsers/makehtml/stripLinkDefinitions';
+import { makehtml_unescapeSpecialChars } from './subParsers/makehtml/unescapeSpecialChars';
+import { makeMarkdown_node } from './subParsers/makemarkdown/node';
+import { ConverterGlobals, ConverterOptions, Optional, ShowdownExtension, ShowdownOptions } from './types';
 
 /**
  * Created by Estevao on 31-05-2015.
@@ -75,7 +75,7 @@ export class Converter {
    * Metadata of the document
    * @type {{parsed: {}, raw: string, format: string}}
    */
-  metadata: ConverterGlobals['metadata'] = {
+  public metadata: ConverterGlobals['metadata'] = {
     parsed: {},
     raw: '',
     format: ''
@@ -91,14 +91,14 @@ export class Converter {
       ' was passed instead.');
     }
 
-    // Initialize with copy of global options merged with 
+    // Initialize with copy of global options merged with
     this.options = {
       ...privateGlobals.globalOptions,
       ...converterOptions
     };
 
     if (this.options.extensions) {
-      if(!isArray(this.options.extensions)) {
+      if (!isArray(this.options.extensions)) {
         this.options.extensions = [this.options.extensions];
       }
 
@@ -123,6 +123,7 @@ export class Converter {
 
       // LEGACY_SUPPORT CODE
       if (showdown.extensions[ext]) {
+        // tslint:disable-next-line
         console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
           'Please inform the developer that the extension should be updated!');
         this.legacyExtensionLoading(showdown.extensions[ext], ext);
@@ -200,7 +201,7 @@ export class Converter {
         case 'output':
           this.outputModifiers.push(ext[i]);
           break;
-        default:// should never reach here
+        default: // should never reach here
           throw Error('Extension loader error: Type unrecognized!!!');
       }
     }
@@ -372,7 +373,7 @@ export class Converter {
     // update metadata
     this.metadata = globals.metadata;
     return text;
-  };
+  }
 
   /**
    * Converts an HTML string into a markdown string
@@ -407,7 +408,7 @@ export class Converter {
     var nodes = doc.childNodes,
         mdDoc = '';
 
-    for (var i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i++) {
       mdDoc += makeMarkdown_node(nodes[i], globals);
     }
 
@@ -431,12 +432,12 @@ export class Converter {
     // find all pre tags and replace contents with placeholder
     // we need this so that we can remove all indentation from html
     // to ease up parsing
-    function substitutePreCodeTags (doc: Document|Element) {
+    function substitutePreCodeTags (d: Document|Element) {
 
-      var pres = doc.querySelectorAll('pre'),
+      var pres = d.querySelectorAll('pre'),
           presPH: string[] = [];
 
-      for (var i = 0; i < pres.length; ++i) {
+      for (let i = 0; i < pres.length; ++i) {
 
         if (pres[i].childElementCount === 1 && (pres[i].firstChild! as Element).tagName.toLowerCase() === 'code') {
 
@@ -472,14 +473,14 @@ export class Converter {
     }
 
     return mdDoc;
-  };
+  }
 
   /**
    * Set an option of this Converter instance
    * @param {string} key
    * @param {*} value
    */
-  public setOption <K extends keyof ShowdownOptions>(key: K, value: ShowdownOptions[K]) {
+  public setOption <K extends keyof ShowdownOptions> (key: K, value: ShowdownOptions[K]) {
     this.options[key] = value;
   }
 
@@ -488,9 +489,9 @@ export class Converter {
    * @param {string} key
    * @returns {*}
    */
-  public getOption <K extends keyof ShowdownOptions>(key: K) {
+  public getOption <K extends keyof ShowdownOptions> (key: K) {
     return this.options[key];
-  };
+  }
 
   /**
    * Get the options of this Converter instance
@@ -498,7 +499,7 @@ export class Converter {
    */
   public getOptions () {
     return this.options;
-  };
+  }
 
   /**
    * Add extension to THIS converter
@@ -507,7 +508,7 @@ export class Converter {
    */
   public addExtension (extension: ShowdownExtension, name: string|null = null) {
     this._parseExtension(extension, name);
-  };
+  }
 
   /**
    * Use a global registered extension with THIS converter
@@ -515,7 +516,7 @@ export class Converter {
    */
   public useExtension (extensionName: string) {
     this._parseExtension(extensionName);
-  };
+  }
 
   /**
    * Set the flavor THIS converter should use
@@ -531,7 +532,7 @@ export class Converter {
       ...privateGlobals.globalOptions,
       ...preset
     };
-  };
+  }
 
   /**
    * Get the currently set flavor of this converter
@@ -539,7 +540,7 @@ export class Converter {
    */
   public getFlavor () {
     return this.setConvFlavor;
-  };
+  }
 
   /**
    * Remove an extension from THIS converter.
@@ -564,7 +565,7 @@ export class Converter {
         }
       }
     }
-  };
+  }
 
   /**
    * Get all extension of THIS converter
@@ -575,7 +576,7 @@ export class Converter {
       language: this.langExtensions,
       output: this.outputModifiers
     };
-  };
+  }
 
   /**
    * Get the metadata of the previously parsed document
@@ -588,7 +589,7 @@ export class Converter {
     } else {
       return this.metadata.parsed;
     }
-  };
+  }
 
   /**
    * Get the metadata format of the previously parsed document
@@ -596,7 +597,7 @@ export class Converter {
    */
   private getMetadataFormat () {
     return this.metadata.format;
-  };
+  }
 
   /**
    * Private: set a single key, value metadata pair
@@ -605,7 +606,7 @@ export class Converter {
    */
   private _setMetadataPair (key: string, value: string) {
     this.metadata.parsed[key] = value;
-  };
+  }
 
   /**
    * Private: set metadata format
@@ -613,7 +614,7 @@ export class Converter {
    */
   private _setMetadataFormat (format: string) {
     this.metadata.format = format;
-  };
+  }
 
   /**
    * Private: set metadata raw text

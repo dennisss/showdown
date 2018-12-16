@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Create a full HTML document from the processed markdown

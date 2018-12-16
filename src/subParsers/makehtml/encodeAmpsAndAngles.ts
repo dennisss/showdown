@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Smart processing for ampersands and angle brackets that need to be encoded.

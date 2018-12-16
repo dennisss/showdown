@@ -1,5 +1,5 @@
 import { _hashHTMLSpan } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Hash span elements that should not be parsed as markdown
@@ -48,6 +48,7 @@ export function makehtml_unhashHTMLSpans (text: string, options: ConverterOption
       var num = parseInt(RegExp.$1);
       repText = repText.replace('¨C' + num + 'C', globals.gHtmlSpans[num]);
       if (limit === 10) {
+        // tslint:disable-next-line
         console.error('maximum nesting of 10 spans reached!!!');
         break;
       }

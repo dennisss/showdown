@@ -1,7 +1,7 @@
-import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_blockGamut } from './blockGamut';
+import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
 import { makehtml_hashBlock } from './hashBlock';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 export function makehtml_blockQuotes (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';

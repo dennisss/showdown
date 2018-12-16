@@ -1,8 +1,8 @@
-import { makehtml_outdent } from './outdent';
-import { makehtml_encodeCode } from './encodeCode';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_detab } from './detab';
+import { makehtml_encodeCode } from './encodeCode';
 import { makehtml_hashBlock } from './hashBlock';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { makehtml_outdent } from './outdent';
 
 /**
  * Process Markdown `<pre><code>` blocks.

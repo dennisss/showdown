@@ -51,6 +51,16 @@ module.exports = function (grunt) {
       ]
     },
 
+    tslint: {
+      options: {
+        configuration: 'tslint.json'
+      },
+      target: [
+        'src/**/*.ts',
+        'test/**/*.ts'
+      ]
+    },
+
     conventionalChangelog: {
       options: {
         changelogOpts: {
@@ -134,7 +144,8 @@ module.exports = function (grunt) {
   grunt.registerTask('lint', function () {
     'use strict';
     grunt.loadNpmTasks('grunt-eslint');
-    grunt.task.run('jshint', 'eslint');
+    grunt.loadNpmTasks('grunt-tslint');
+    grunt.task.run('jshint', 'eslint', 'tslint');
   });
 
   /**

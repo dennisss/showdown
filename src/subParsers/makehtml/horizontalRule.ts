@@ -1,5 +1,5 @@
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_hashBlock } from './hashBlock';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 /**
  * Turn Markdown horizontal rule shortcuts into <hr /> tags.

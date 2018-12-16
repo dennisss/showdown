@@ -1,12 +1,12 @@
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_blockQuotes } from './blockQuotes';
+import { makehtml_codeBlocks } from './codeBlocks';
+import { makehtml_hashHTMLBlocks } from './hashHTMLBlocks';
 import { makehtml_headers } from './headers';
 import { makehtml_horizontalRule } from './horizontalRule';
 import { makehtml_lists } from './lists';
-import { makehtml_codeBlocks } from './codeBlocks';
-import { makehtml_tables } from './tables';
-import { makehtml_hashHTMLBlocks } from './hashHTMLBlocks';
 import { makehtml_paragraphs } from './paragraphs';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { makehtml_tables } from './tables';
 
 /**
  * These are all the transformations that form block-level

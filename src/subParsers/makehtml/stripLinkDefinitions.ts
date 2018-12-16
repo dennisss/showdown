@@ -1,5 +1,5 @@
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_encodeAmpsAndAngles } from './encodeAmpsAndAngles';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 /**
  * Strips link definitions from text, stores the URLs and titles in

@@ -1,5 +1,5 @@
 import { escapeCharactersCallback } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Encode/escape certain characters inside Markdown code runs.

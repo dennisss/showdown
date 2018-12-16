@@ -1,5 +1,5 @@
-import { regexes, escapeCharactersCallback, escapeCharacters, isUndefined, isString } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { escapeCharacters, escapeCharactersCallback, isString, isUndefined, regexes } from '../../helpers';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Turn Markdown image shortcuts into <img> tags.

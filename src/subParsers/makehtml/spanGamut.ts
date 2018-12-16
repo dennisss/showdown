@@ -1,16 +1,16 @@
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_codeSpans } from './codeSpans';
-import { makehtml_escapeSpecialCharsWithinTagAttributes } from './escapeSpecialCharsWithinTagAttributes';
-import { makehtml_encodeBackslashEscapes } from './encodeBackslashEscapes';
-import { makehtml_images } from './images';
-import { makehtml_links } from './links';
-import { makehtml_emoji } from './emoji';
-import { makehtml_underline } from './underline';
-import { makehtml_italicsAndBold } from './italicsAndBold';
-import { makehtml_strikethrough } from './strikethrough';
 import { makehtml_ellipsis } from './ellipsis';
-import { makehtml_hashHTMLSpans } from './hashHTMLSpans';
+import { makehtml_emoji } from './emoji';
 import { makehtml_encodeAmpsAndAngles } from './encodeAmpsAndAngles';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { makehtml_encodeBackslashEscapes } from './encodeBackslashEscapes';
+import { makehtml_escapeSpecialCharsWithinTagAttributes } from './escapeSpecialCharsWithinTagAttributes';
+import { makehtml_hashHTMLSpans } from './hashHTMLSpans';
+import { makehtml_images } from './images';
+import { makehtml_italicsAndBold } from './italicsAndBold';
+import { makehtml_links } from './links';
+import { makehtml_strikethrough } from './strikethrough';
+import { makehtml_underline } from './underline';
 
 /**
  * These are all the transformations that occur *within* block-level

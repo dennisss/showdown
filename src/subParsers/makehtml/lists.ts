@@ -1,10 +1,10 @@
-import { makehtml_outdent } from './outdent';
-import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
-import { makehtml_spanGamut } from './spanGamut';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_blockGamut } from './blockGamut';
+import { makehtml_githubCodeBlocks } from './githubCodeBlocks';
 import { makehtml_hashHTMLBlocks } from './hashHTMLBlocks';
+import { makehtml_outdent } from './outdent';
 import { makehtml_paragraphs } from './paragraphs';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { makehtml_spanGamut } from './spanGamut';
 
 /**
  * Form HTML ordered (numbered) and unordered (bulleted) lists.
@@ -60,7 +60,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
     }
 
     listStr = listStr.replace(rgx, function (wholeMatch: string, m1: string, m2: string, m3: string, m4: string, taskbtn: string, checked: string) {
-      
+
       let isChecked = (checked && checked.trim() !== '');
 
       var item = makehtml_outdent(m4, options, globals),
@@ -173,7 +173,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
 
     if (list.search(counterRxg) !== -1) {
       (function parseCL (txt) {
-        var pos = txt.search(counterRxg),
+        let pos = txt.search(counterRxg),
             style = styleStartNumber(list, listType);
         if (pos !== -1) {
           // slice
@@ -190,7 +190,7 @@ export function makehtml_lists (text: string, options: ConverterOptions, globals
         }
       })(list);
     } else {
-      var style = styleStartNumber(list, listType);
+      let style = styleStartNumber(list, listType);
       result = '\n\n<' + listType + style + '>\n' + processListItems(list, !!trimTrailing) + '</' + listType + '>\n';
     }
 

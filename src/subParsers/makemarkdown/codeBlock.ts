@@ -5,6 +5,6 @@ export function makeMarkdown_codeBlock (node: Element, globals: any) {
       numStr  = node.getAttribute('precodenum');
 
   let num = parseInt(numStr || '');
-    
+
   return '```' + lang + '\n' + globals.preList[num] + '\n```';
 }

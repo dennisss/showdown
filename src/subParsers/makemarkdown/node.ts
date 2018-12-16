@@ -1,19 +1,19 @@
-import { makeMarkdown_txt } from './txt';
+import { isComment, isElement, isText } from '../../node_helpers';
 import { makeMarkdown_blockquote } from './blockquote';
-import { makeMarkdown_pre } from './pre';
-import { makeMarkdown_table } from './table';
-import { makeMarkdown_strong } from './strong';
-import { makeMarkdown_strikethrough } from './strikethrough';
-import { makeMarkdown_header } from './header';
-import { makeMarkdown_paragraph } from './paragraph';
-import { makeMarkdown_hr } from './hr';
-import { makeMarkdown_list } from './list';
 import { makeMarkdown_codeBlock } from './codeBlock';
 import { makeMarkdown_codeSpan } from './codeSpan';
 import { makeMarkdown_emphasis } from './emphasis';
-import { makeMarkdown_links } from './links';
+import { makeMarkdown_header } from './header';
+import { makeMarkdown_hr } from './hr';
 import { makeMarkdown_image } from './image';
-import { isText, isComment, isElement } from '../../node_helpers';
+import { makeMarkdown_links } from './links';
+import { makeMarkdown_list } from './list';
+import { makeMarkdown_paragraph } from './paragraph';
+import { makeMarkdown_pre } from './pre';
+import { makeMarkdown_strikethrough } from './strikethrough';
+import { makeMarkdown_strong } from './strong';
+import { makeMarkdown_table } from './table';
+import { makeMarkdown_txt } from './txt';
 
 export function makeMarkdown_node (node: Node, globals: any, spansOnly?: boolean) {
   'use strict';

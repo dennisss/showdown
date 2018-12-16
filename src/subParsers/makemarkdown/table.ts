@@ -1,5 +1,5 @@
-import { makeMarkdown_tableCell } from './tableCell';
 import { padEnd } from '../../helpers';
+import { makeMarkdown_tableCell } from './tableCell';
 
 export function makeMarkdown_table (node: Element, globals: any) {
   'use strict';

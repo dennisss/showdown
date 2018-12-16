@@ -1,15 +1,7 @@
-import { makehtml_spanGamut } from './spanGamut';
-import { makehtml_hashBlock } from './hashBlock';
 import { isString } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
-
-function niceParseInt(s: string|number|undefined) {
-  if(typeof(s) === 'number') {
-    return s;
-  }
-
-  return parseInt(s || '');
-}
+import { ConverterGlobals, ConverterOptions } from '../../types';
+import { makehtml_hashBlock } from './hashBlock';
+import { makehtml_spanGamut } from './spanGamut';
 
 export function makehtml_headers (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';

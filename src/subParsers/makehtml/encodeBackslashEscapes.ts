@@ -1,5 +1,5 @@
 import { escapeCharactersCallback } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Returns the string, with after processing the following backslash escape sequences.

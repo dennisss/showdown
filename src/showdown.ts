@@ -1,6 +1,6 @@
-import { getDefaultOpts, allOptionsOn } from './options';
-import { isString, stdExtName, isUndefined, isArray } from './helpers';
-import { ShowdownExtension, ShowdownOptions, Optional } from './types';
+import { isArray, isString, isUndefined, stdExtName } from './helpers';
+import { allOptionsOn, getDefaultOpts } from './options';
+import { Optional, ShowdownExtension, ShowdownOptions } from './types';
 
 /**
  * Created by Tivie on 06-01-2015.
@@ -58,7 +58,7 @@ export const privateGlobals: {
       vanilla: getDefaultOpts(true),
       allOn: allOptionsOn()
     }
-}
+};
 
 
 export const showdown = {
@@ -240,13 +240,14 @@ export const showdown = {
 
     var validateExtension = validate(ext, null);
     if (!validateExtension.valid) {
+      // tslint:disable-next-line
       console.warn(validateExtension.error);
       return false;
     }
     return true;
   }
 
-}
+};
 
 
 

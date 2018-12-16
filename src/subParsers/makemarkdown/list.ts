@@ -1,6 +1,6 @@
+import { isElement } from '../../node_helpers';
 import { ConverterGlobals } from '../../types';
 import { makeMarkdown_listItem } from './listItem';
-import { isElement } from '../../node_helpers';
 
 export function makeMarkdown_list (node: Element, globals: ConverterGlobals, type: 'ol'|'ul') {
   'use strict';

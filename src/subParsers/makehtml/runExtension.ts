@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals, ShowdownExtension } from '../../types';
+import { ConverterGlobals, ConverterOptions, ShowdownExtension } from '../../types';
 
 /**
  * Run extension

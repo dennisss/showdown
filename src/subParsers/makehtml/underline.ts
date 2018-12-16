@@ -1,5 +1,5 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
 import { escapeCharactersCallback } from '../../helpers';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 export function makehtml_underline (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';

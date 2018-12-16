@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Swap back in all the special characters we've hidden.

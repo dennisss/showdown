@@ -1,5 +1,5 @@
 import { escapeCharactersCallback } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Within tags -- meaning between < and > -- encode [\ ` * _ ~ =] so they

@@ -22,4 +22,4 @@ export function makeMarkdown_blockquote (node: Node, globals: any): string {
   txt = txt.trim();
   txt = '> ' + txt.split('\n').join('\n> ');
   return txt;
-};
+}

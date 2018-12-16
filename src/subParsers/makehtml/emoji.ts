@@ -1,5 +1,5 @@
 import { emojis } from '../../helpers';
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
  * Turn emoji codes into emojis

@@ -1,6 +1,6 @@
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_encodeCode } from './encodeCode';
 import { makehtml_hashHTMLSpans } from './hashHTMLSpans';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 /**
  *

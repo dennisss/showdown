@@ -1,6 +1,6 @@
 import { replaceRecursiveRegExp } from '../../helpers';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_encodeCode } from './encodeCode';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 /**
  * Hash and escape <code> elements that should not be parsed as markdown

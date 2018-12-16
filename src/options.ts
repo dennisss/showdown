@@ -1,4 +1,4 @@
-import { ShowdownOptions, Optional } from './types';
+import { Optional, ShowdownOptions } from './types';
 
 /**
  * Created by Tivie on 13-07-2015.

@@ -1,4 +1,4 @@
-import { ConverterOptions, ConverterGlobals } from '../../types';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 
 export function makehtml_strikethrough (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';

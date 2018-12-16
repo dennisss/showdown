@@ -1,6 +1,6 @@
 
-declare module NodeJS {
-	interface Global {
-		document: Document;
-	}
+declare namespace NodeJS {
+  interface Global {
+    document: Document;
+  }
 }

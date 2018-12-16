@@ -15,7 +15,7 @@ import { ConverterGlobals, ConverterOptions } from './types';
 export function isString (a: any): a is string {
   'use strict';
   return (typeof a === 'string' || a instanceof String);
-};
+}
 
 /**
  * Check if var is a function
@@ -23,11 +23,11 @@ export function isString (a: any): a is string {
  * @param {*} a
  * @returns {boolean}
  */
-export function isFunction (a: any): a is Function {
+export function isFunction (a: any): a is Function { // tslint:disable-line
   'use strict';
   var getType = {};
   return a && getType.toString.call(a) === '[object Function]';
-};
+}
 
 /**
  * isArray helper function
@@ -35,10 +35,10 @@ export function isFunction (a: any): a is Function {
  * @param {*} a
  * @returns {boolean}
  */
-export function isArray (a: any): a is Array<any> {
+export function isArray (a: any): a is any[] {
   'use strict';
   return Array.isArray(a);
-};
+}
 
 /**
  * Check if value is undefined
@@ -49,7 +49,7 @@ export function isArray (a: any): a is Array<any> {
 export function isUndefined (value: any): value is undefined {
   'use strict';
   return typeof value === 'undefined';
-};
+}
 
 /**
  * ForEach helper function
@@ -58,9 +58,9 @@ export function isUndefined (value: any): value is undefined {
  * @param {*} obj
  * @param {function} callback Accepts 3 params: 1. value, 2. key, 3. the original array/object
  */
-export function forEach<T extends Array<U>, U> (obj: T, callback: (val: U, idx: number, obj: T) => void): void;
+export function forEach<T extends U[], U> (obj: T, callback: (val: U, idx: number, obj: T) => void): void;
 export function forEach<T extends {}, K extends keyof T> (obj: T, callback: (val: T[K], idx: K, obj: T) => void): void;
-export function forEach<T extends Array<any>|object> (obj: T, callback: (val: any, idx: any, obj: T) => void): void {
+export function forEach<T extends any[]|object> (obj: T, callback: (val: any, idx: any, obj: T) => void): void {
   'use strict';
   // check if obj is defined
   if (isUndefined(obj)) {
@@ -89,7 +89,7 @@ export function forEach<T extends Array<any>|object> (obj: T, callback: (val: an
   } else {
     throw new Error('obj does not seem to be an array or an iterable object');
   }
-};
+}
 
 /**
  * Standardidize extension name
@@ -100,7 +100,7 @@ export function forEach<T extends Array<any>|object> (obj: T, callback: (val: an
 export function stdExtName (s: string) {
   'use strict';
   return s.replace(/[_?*+\/\\.^-]/g, '').replace(/\s/g, '').toLowerCase();
-};
+}
 
 /**
  * Callback used to escape characters when passing through String.replace
@@ -137,7 +137,7 @@ export function escapeCharacters (text: string, charsToEscape: string, afterBack
   text = text.replace(regex, escapeCharactersCallback);
 
   return text;
-};
+}
 
 function rgxFindMatchPos (str: string, left: string, right: string, flags?: string) {
   'use strict';
@@ -172,10 +172,10 @@ function rgxFindMatchPos (str: string, left: string, right: string, flags?: stri
         }
       }
     }
-  } while (t && (s !== undefined? (x.lastIndex = s) : false));
+  } while (t && (s !== undefined ? (x.lastIndex = s) : false));
 
   return pos;
-};
+}
 
 /**
  * matchRecursiveRegExp
@@ -221,7 +221,7 @@ export function matchRecursiveRegExp (str: string, left: string, right: string, 
     ]);
   }
   return results;
-};
+}
 
 /**
  *
@@ -270,7 +270,7 @@ export function replaceRecursiveRegExp (str: string, replacement: string|((a: st
     finalStr = bits.join('');
   }
   return finalStr;
-};
+}
 
 /**
  * Returns the index within the passed String object of the first occurrence of the specified regex,
@@ -284,14 +284,14 @@ export function replaceRecursiveRegExp (str: string, replacement: string|((a: st
  */
 export function regexIndexOf (str: string, regex: RegExp, fromIndex: number = 0) {
   if (!isString(str)) {
-    throw 'InvalidArgumentError: first parameter of regexIndexOf function must be a string';
+    throw new Error('InvalidArgumentError: first parameter of regexIndexOf function must be a string');
   }
   if (regex instanceof RegExp === false) {
-    throw 'InvalidArgumentError: second parameter of regexIndexOf function must be an instance of RegExp';
+    throw new Error('InvalidArgumentError: second parameter of regexIndexOf function must be an instance of RegExp');
   }
   var indexOf = str.substring(fromIndex).search(regex);
   return (indexOf >= 0) ? (indexOf + (fromIndex)) : indexOf;
-};
+}
 
 /**
  * Splits the passed string object at the defined index, and returns an array composed of the two substrings
@@ -303,10 +303,10 @@ export function regexIndexOf (str: string, regex: RegExp, fromIndex: number = 0)
 export function splitAtIndex (str: string, index: number) {
   'use strict';
   if (!isString(str)) {
-    throw 'InvalidArgumentError: first parameter of regexIndexOf function must be a string';
+    throw new Error('InvalidArgumentError: first parameter of regexIndexOf function must be a string');
   }
   return [str.substring(0, index), str.substring(index)];
-};
+}
 
 /**
  * Obfuscate an e-mail address through the use of Character Entities,
@@ -346,7 +346,7 @@ export function encodeEmailAddress (mail: string) {
   });
 
   return mail;
-};
+}
 
 /**
  *
@@ -357,10 +357,8 @@ export function encodeEmailAddress (mail: string) {
  */
 export function padEnd (str: string, targetLength: number, padString?: string) {
   'use strict';
-  /*jshint bitwise: false*/
-  // eslint-disable-next-line space-infix-ops
-  targetLength = targetLength>>0; //floor if number or convert non-number to 0;
-  /*jshint bitwise: true*/
+  // tslint:disable-next-line
+  targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
   padString = String(padString || ' ');
   if (str.length > targetLength) {
     return String(str);
@@ -369,9 +367,9 @@ export function padEnd (str: string, targetLength: number, padString?: string) {
     if (targetLength > padString.length) {
       padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
     }
-    return String(str) + padString.slice(0,targetLength);
+    return String(str) + padString.slice(0, targetLength);
   }
-};
+}
 
 /**
  * Unescape HTML entities
@@ -386,11 +384,11 @@ export function unescapeHTMLEntities (txt: string) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&');
-};
+}
 
 export function _hashHTMLSpan (html: string, globals: ConverterGlobals) {
   return '¨C' + (globals.gHtmlSpans.push(html) - 1) + 'C';
-};
+}
 
 
 
@@ -408,7 +406,7 @@ export interface EventParams {
   converter?: Converter;
   globals?: ConverterGlobals;
   options?: ConverterOptions;
-  text?: string; // XXX: 
+  text?: string; // XXX:
 }
 
 export class Event {
@@ -418,8 +416,8 @@ export class Event {
    * @param {string} text Text
    * @param {{}} params optional. params of the event
    * @constructor
-   */  
-  constructor(private name: string, private text: string, private params: EventParams) {
+   */
+  constructor (private name: string, private text: string, private params: EventParams) {
 
   }
 
@@ -433,53 +431,53 @@ export class Event {
    * Get the name of the event
    * @returns {string}
    */
-  getName() {
+  public getName () {
     return this.name;
   }
 
-  getEventName() {
+  public getEventName () {
     return this.name;
   }
 
   private _stopExecution = false;
 
-  getRegexp() {
+  public getRegexp () {
     return this.regexp;
   }
 
-  getOptions() {
+  public getOptions () {
     return this.options;
   }
 
-  getConverter() {
+  public getConverter () {
     return this.converter;
   }
 
-  getGlobals() {
+  public getGlobals () {
     return this.globals;
   }
 
-  getCapturedText() {
+  public getCapturedText () {
     return this.text;
   }
 
-  getText() {
+  public getText () {
     return this.text;
   }
 
-  setText(newText: string) {
+  public setText (newText: string) {
     this.text = newText;
   }
 
-  getMatches() {
+  public getMatches () {
     return this.matches;
   }
 
-  setMatches(newMatches: object) {
+  public setMatches (newMatches: object) {
     this.matches = newMatches;
   }
 
-  preventDefault(bool: boolean) {
+  public preventDefault (bool: boolean) {
     this._stopExecution = !bool;
   }
 

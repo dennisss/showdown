@@ -1,6 +1,6 @@
-import { splitAtIndex, replaceRecursiveRegExp, regexIndexOf } from '../../helpers';
+import { regexIndexOf, replaceRecursiveRegExp, splitAtIndex } from '../../helpers';
+import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_hashElement } from './hashElement';
-import { ConverterOptions, ConverterGlobals } from '../../types';
 
 export function makehtml_hashHTMLBlocks (text: string, options: ConverterOptions, globals: ConverterGlobals) {
   'use strict';
