@@ -562,7 +562,7 @@ export const regexes = {
 /**
  * EMOJIS LIST
  */
-export const emojis: { [code: string]: string } = {
+export const emojis: { [code: string]: string|undefined } = {
   '+1':'\ud83d\udc4d',
   '-1':'\ud83d\udc4e',
   '100':'\ud83d\udcaf',

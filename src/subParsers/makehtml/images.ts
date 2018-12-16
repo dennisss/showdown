@@ -42,14 +42,19 @@ export function makehtml_images (text: string, options: ConverterOptions, global
       }
       url = '#' + linkId;
 
-      if (!isUndefined(gUrls[linkId])) {
-        url = gUrls[linkId];
-        if (!isUndefined(gTitles[linkId])) {
-          title = gTitles[linkId];
+      let gurl = gUrls[linkId];
+      if (!isUndefined(gurl)) {
+        url = gurl;
+
+        let gtitle = gTitles[linkId];
+        if (!isUndefined(gtitle)) {
+          title = gtitle;
         }
-        if (!isUndefined(gDims[linkId])) {
-          width = gDims[linkId].width;
-          height = gDims[linkId].height;
+
+        let gdim = gDims[linkId];
+        if (!isUndefined(gdim)) {
+          width = gdim.width;
+          height = gdim.height;
         }
       } else {
         return wholeMatch;

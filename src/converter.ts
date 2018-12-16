@@ -64,7 +64,7 @@ export class Converter {
    * @private
    * @type {{}}
    */
-  private listeners: { [name: string]: EventListener[]; } = {};
+  private listeners: { [name: string]: EventListener[]|undefined; } = {};
 
   /**
    * The flavor set in this converter
@@ -122,19 +122,22 @@ export class Converter {
       name = ext;
 
       // LEGACY_SUPPORT CODE
-      if (showdown.extensions[ext]) {
+      let legacyExt = showdown.extensions[ext];
+      if (!isUndefined(legacyExt)) {
         // tslint:disable-next-line
         console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
           'Please inform the developer that the extension should be updated!');
-        this.legacyExtensionLoading(showdown.extensions[ext], ext);
+        this.legacyExtensionLoading(legacyExt, ext);
         return;
       // END LEGACY SUPPORT CODE
 
-      } else if (!isUndefined(privateGlobals.extensions[ext])) {
-        ext = privateGlobals.extensions[ext];
-
       } else {
-        throw Error('Extension "' + ext + '" could not be loaded. It was either not found or is not a valid extension.');
+        let globalExt = privateGlobals.extensions[ext];
+        if (!isUndefined(globalExt)) {
+          ext = globalExt;
+        } else {
+          throw Error('Extension "' + ext + '" could not be loaded. It was either not found or is not a valid extension.');
+        }
       }
     }
 
@@ -164,10 +167,15 @@ export class Converter {
       }
 
       let listeners = ext[i].listeners;
-      if (listeners !== undefined) {
+      if (!isUndefined(listeners)) {
         for (var ln in listeners) {
-          if (listeners.hasOwnProperty(ln)) {
-            this.listen(ln, listeners[ln]);
+          if (!listeners.hasOwnProperty(ln)) {
+            continue;
+          }
+
+          let list = listeners[ln];
+          if (!isUndefined(list)) {
+            this.listen(ln, list);
           }
         }
       }
@@ -221,10 +229,13 @@ export class Converter {
       throw Error('Invalid argument in converter.listen() method: callback must be a function, but ' + typeof callback + ' given');
     }
     name = name.toLowerCase();
-    if (!this.listeners.hasOwnProperty(name)) {
-      this.listeners[name] = [];
+
+    let list = this.listeners[name];
+    if (isUndefined(list)) {
+      list = [];
+      this.listeners[name] = list;
     }
-    this.listeners[name].push(callback);
+    list.push(callback);
   }
 
   // XXX: Not actually private as it is used internally by all of the subParsers
@@ -247,9 +258,10 @@ export class Converter {
     params.globals = globals;
     var event = new Event(evtName, text, params);
 
-    if (this.listeners.hasOwnProperty(evtName)) {
-      for (var ei = 0; ei < this.listeners[evtName].length; ++ei) {
-        var nText = this.listeners[evtName][ei](event);
+    let list = this.listeners[evtName];
+    if (!isUndefined(list)) {
+      for (var ei = 0; ei < list.length; ++ei) {
+        var nText = list[ei](event);
         if (nText && typeof nText !== 'undefined') {
           event.setText(nText);
         }

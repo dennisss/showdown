@@ -8,10 +8,10 @@ import { Optional, ShowdownExtension, ShowdownOptions } from './types';
 
 // Private properties
 export const privateGlobals: {
-  extensions: { [name: string]: ShowdownExtension[]; };
+  extensions: { [name: string]: ShowdownExtension[]|undefined; };
   globalOptions: ShowdownOptions;
   setFlavor: string;
-  flavor: { [name: string]: Optional<ShowdownOptions> };
+  flavor: { [name: string]: Optional<ShowdownOptions>|undefined };
 } = {
   extensions: {},
   globalOptions: getDefaultOpts(true),
@@ -67,7 +67,7 @@ export const showdown = {
    * TODO LEGACY SUPPORT CODE
    * @type {{}}
    */
-  extensions: {} as { [name: string]: ShowdownExtension; },
+  extensions: {} as { [name: string]: ShowdownExtension|undefined; },
 
   /**
    * Set a global option

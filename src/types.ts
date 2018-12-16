@@ -47,7 +47,7 @@ interface FilterExtension extends Extension {
 
 
 interface ListenerExtension extends Extension {
-  listeners?: { [name: string]: EventListener; };
+  listeners?: { [name: string]: EventListener|undefined; };
 }
 
 
@@ -297,22 +297,22 @@ export interface ConverterGlobals {
   gHtmlBlocks: string[];
   gHtmlMdBlocks: string[];
   gHtmlSpans: string[];
-  gUrls: { [id: string]: string; };
-  gTitles: { [id: string]: string };
+  gUrls: { [id: string]: string|undefined; };
+  gTitles: { [id: string]: string|undefined; };
   gDimensions: { [id: string]: {
     width: string;
     height: string;
-  } };
+  }|undefined };
   gListLevel: number;
-  hashLinkCounts: { [title: string]: number; };
+  hashLinkCounts: { [title: string]: number|undefined; };
   langExtensions: ShowdownExtension[];
   outputModifiers: ShowdownExtension[];
   converter: Converter;
   ghCodeBlocks: Array<{ text: string; codeblock: string; }>;
   metadata: {
-    parsed: { [key: string]: string; },
-        raw: string;
-        format: string;
+    parsed: { [key: string]: string|undefined; },
+    raw: string;
+    format: string;
   };
 }
 

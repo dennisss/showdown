@@ -91,7 +91,7 @@ function writeAnchorTag (evt: Event, options: ConverterOptions, globals: Convert
   var target = '';
 
   // TODO: We should convert this to a typecheck by making a new type of event that always has matches filled int
-  if (text === undefined) {
+  if (isUndefined(text)) {
     throw new Error('Malformed event');
   }
 
@@ -109,10 +109,13 @@ function writeAnchorTag (evt: Event, options: ConverterOptions, globals: Convert
     }
     url = '#' + id;
 
-    if (!isUndefined(globals.gUrls[id])) {
-      url = globals.gUrls[id];
-      if (!isUndefined(globals.gTitles[id])) {
-        title = globals.gTitles[id];
+    let gurl = globals.gUrls[id];
+    if (!isUndefined(gurl)) {
+      url = gurl;
+
+      let gtitle = globals.gTitles[id];
+      if (!isUndefined(gtitle)) {
+        title = gtitle;
       }
     } else {
       return wholeMatch;

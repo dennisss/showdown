@@ -1,4 +1,4 @@
-import { isString } from '../../helpers';
+import { isString, isUndefined } from '../../helpers';
 import { ConverterGlobals, ConverterOptions } from '../../types';
 import { makehtml_hashBlock } from './hashBlock';
 import { makehtml_spanGamut } from './spanGamut';
@@ -118,8 +118,10 @@ export function makehtml_headers (text: string, options: ConverterOptions, globa
       title = prefix + title;
     }
 
-    if (globals.hashLinkCounts[title]) {
-      title = title + '-' + (globals.hashLinkCounts[title]++);
+    let count = globals.hashLinkCounts[title];
+    if (!isUndefined(count)) {
+      globals.hashLinkCounts[title] = count + 1;
+      title = title + '-' + count;
     } else {
       globals.hashLinkCounts[title] = 1;
     }

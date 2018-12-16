@@ -1,4 +1,4 @@
-import { emojis } from '../../helpers';
+import { emojis, isUndefined } from '../../helpers';
 import { ConverterGlobals, ConverterOptions } from '../../types';
 
 /**
@@ -18,8 +18,9 @@ export function makehtml_emoji (text: string, options: ConverterOptions, globals
   var emojiRgx = /:([\S]+?):/g;
 
   text = text.replace(emojiRgx, function (wm, emojiCode) {
-    if (emojis.hasOwnProperty(emojiCode)) {
-      return emojis[emojiCode];
+    let em = emojis[emojiCode];
+    if (!isUndefined(em)) {
+      return em;
     }
     return wm;
   });
