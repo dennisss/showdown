@@ -231,7 +231,7 @@ export function matchRecursiveRegExp (str: string, left: string, right: string, 
   'use strict';
 
   var matchPos = rgxFindMatchPos (str, left, right, flags),
-      results = [];
+      results: string[][] = [];
 
   for (var i = 0; i < matchPos.length; ++i) {
     results.push([
@@ -268,7 +268,7 @@ export function replaceRecursiveRegExp (str: string, replacement: string|((a: st
       lng = matchPos.length;
 
   if (lng > 0) {
-    var bits = [];
+    var bits: string[] = [];
     if (matchPos[0].wholeMatch.start !== 0) {
       bits.push(str.slice(0, matchPos[0].wholeMatch.start));
     }

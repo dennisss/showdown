@@ -81,10 +81,10 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
 
     var rawHeaders = tableLines[0].split('|').map(function (s) { return s.trim(); }),
         rawStyles = tableLines[1].split('|').map(function (s) { return s.trim(); }),
-        rawCells = [],
-        headers = [],
-        styles = [],
-        cells = [];
+        rawCells: string[][] = [],
+        headers: string[] = [],
+        styles: string[] = [],
+        cells: string[][] = [];
 
     tableLines.shift();
     tableLines.shift();
@@ -118,7 +118,7 @@ export function makehtml_tables (text: string, options: ConverterOptions, global
     }
 
     for (i = 0; i < rawCells.length; ++i) {
-      var row = [];
+      var row: string[] = [];
       for (var ii = 0; ii < headers.length; ++ii) {
         if (isUndefined(rawCells[i][ii])) {
           // TODO
